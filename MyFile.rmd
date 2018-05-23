@@ -1,0 +1,6 @@
+# Here's a heading
+*** this is some bold text ***
+```{r}
+Sys.time()
+```
+                        

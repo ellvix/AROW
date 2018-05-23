@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RMD Renderer</title>
+
+        <link rel="stylesheet" href="src/bootstrap/css/bootstrap.min.css" >
+        <link href="src/styles.css" rel="stylesheet"/>
+
+        <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
+        <script src="src/bootstrap/js/popper.min.js"></script>
+        <script src="src/bootstrap/js/bootstrap.min.js"></script>
+        <script src="src/classes.js"></script>
+        <script src="src/main.js"></script>
+
+    </head>
+
+    <body>
+        <div id="header_wrapper">
+            <a href="#main" class="sr-only">Skip to main content</a>
+            <header class="wrapper clearfix" role="banner" aria-label="header" id="header">
+                <div class="container relative">
+                    <div id="psu_icon_wrapper">
+                        <div id="psu_text_overlay">
+                            <a href="http://psu.edu" title="The Pennsylvania State University" class="psu-link">Penn State</a>
+                        </div>
+                        <img alt="Penn State University" title="Penn State University" src="src/psu_logo.png">
+                    </div>
+                    <div id="title_wrapper" class="text-center">
+                        <h1 class="title">RMD Renderer</h1>
+                    </div>
+                </div>
+            </header>
+            <nav id="topnav" role="navigation" aria-label="primary navigation">
+                <ul id="topnavul" role="menubar">
+                    <li class="active"><a href="/">Home</a></li>
+                    <li><a href="#">Link1</a></li>
+                    <li><a href="#">Link2</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <main id="main">
+        <div class="container margin_top">
+            <h2>Create some RMD and render it</h2>
+            <p>The idea here is to have a web interface to create an rmd file (or string at least), then send that to php land, process the file or string with R, render a bunch of other files, and serve those to the client</p>
+
+            <div id="input">
+                <p>To get started, type some RMarkdown in the text box and submit. Default is fine</p>
+                <p>This system requires JavaScript.</p>
+                <div>
+                    <p><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="margin_lr" value="MyFile"></p>
+
+                    <div class="dropdown margin_bottom" id="edit_menu">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="insert_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Insert <i class="caret"></i></button>
+                        <div class="dropdown-menu" aria-labelledby="insert_label">
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                        </div>
+                        <button class="btn btn-default dropdown-toggle" type="button" id="format_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Format <i class="caret"></i></button>
+                        <div class="dropdown-menu" aria-labelledby="format_label">
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                        </div>
+                        <button class="btn btn-default dropdown-toggle" type="button" id="symbol_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Symbols <i class="caret"></i></button>
+                        <div class="dropdown-menu" aria-labelledby="symbol_label">
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                        </div>
+                        <button class="btn btn-default dropdown-toggle" type="button" id="greek_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Greek <i class="caret"></i></button>
+                        <div class="dropdown-menu" aria-labelledby="greek_label">
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                        </div>
+                        <button class="btn btn-default dropdown-toggle" type="button" id="structures_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Structures <i class="caret"></i></button>
+                        <div class="dropdown-menu" aria-labelledby="structures_label">
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                        </div>
+                    </div>
+
+                    <p><label for="rmd_text">Main file contents</label></p>
+                    <p><textarea id="rmd_text"># Here's a heading
+                        *** this is some bold text ***
+                        ```{r}
+                        Sys.time()
+                        ```
+                    </textarea></p>
+                </div>
+                <div class="inline_divs">
+                    <p>Create which files?</p>
+                    <div class="col-sm-2"><label for="choice_html">html</label><input type="checkbox" class="format_choice margin_lr" id="choice_html" checked></div>
+                    <div class="col-sm-2"><label for="choice_docx">docx</label><input type="checkbox" class="format_choice margin_lr" id="choice_docx"></div>
+                    <div class="col-sm-2"><label for="choice_pdf">pdf</label><input type="checkbox" class="format_choice margin_lr" id="choice_pdf"></div>
+                    <div class="col-sm-2"><label for="choice_ppt">ppt</label><input type="checkbox" class="format_choice margin_lr" id="choice_ppt"></div>
+                </div>
+                <div class="clearfix"></div>
+                <p class="text-center"><button class="btn btn-primary" id="main_submit">Submit</button></p>
+            </div>
+        </div>
+
+        <div id="output" aria-live="polite">
+            Any messages will be displayed here.
+        </div>
+        </div>
+
+        </main>
+    </body>
+</html>
+
