@@ -53,44 +53,19 @@
                     <p><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="margin_lr" value="MyFile"></p>
 
                     <div class="dropdown margin_bottom" id="edit_menu">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="insert_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Insert <i class="caret"></i></button>
+                        <button class="btn btn-default dropdown-toggle" type="button" id="insert_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Label <i class="caret"></i></button>
                         <div class="dropdown-menu" aria-labelledby="insert_label">
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                        </div>
-                        <button class="btn btn-default dropdown-toggle" type="button" id="format_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Format <i class="caret"></i></button>
-                        <div class="dropdown-menu" aria-labelledby="format_label">
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                        </div>
-                        <button class="btn btn-default dropdown-toggle" type="button" id="symbol_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Symbols <i class="caret"></i></button>
-                        <div class="dropdown-menu" aria-labelledby="symbol_label">
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                        </div>
-                        <button class="btn btn-default dropdown-toggle" type="button" id="greek_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Greek <i class="caret"></i></button>
-                        <div class="dropdown-menu" aria-labelledby="greek_label">
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
-                        </div>
-                        <button class="btn btn-default dropdown-toggle" type="button" id="structures_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Structures <i class="caret"></i></button>
-                        <div class="dropdown-menu" aria-labelledby="structures_label">
-                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">trigger 1</button>
+                            <button class="invis_button dropdown-item" id="edit_trigger_asdf">Not available</button>
                         </div>
                     </div>
 
                     <p><label for="rmd_text">Main file contents</label></p>
                     <p><textarea id="rmd_text"># Here's a heading
-                        *** this is some bold text ***
-                        ```{r}
-                        Sys.time()
-                        ```
+*** this is some bold text ***
+Here's some R code:
+```{r}
+Sys.time()
+```
                     </textarea></p>
                 </div>
                 <div class="inline_divs">
@@ -103,13 +78,17 @@
                 <div class="clearfix"></div>
                 <p class="text-center"><button class="btn btn-primary" id="main_submit">Submit</button></p>
             </div>
-        </div>
 
-        <div id="output" aria-live="polite">
-            Any messages will be displayed here.
-        </div>
-        </div>
+            <div id="live" aria-live="polite">
+                Any messages will be displayed here.
+            </div>
+            <div id="output">
+            </div>
+            <div>
+            <div id="system_message">
+            </div>
 
+        </div>
         </main>
     </body>
 </html>

@@ -2,7 +2,7 @@
 // what this file does: get data, send to R renderer, return files (?) and messages
 
 error_reporting(E_ALL & ~E_NOTICE);
-$testing = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$testing = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
 
 // wipe out the old files
@@ -22,12 +22,12 @@ foreach ( $fileFormats as $thisFormat) {
 // write input data to file
 $fileContents = $_POST['rmd_text'];
 $errorMsg = "";
-$outputMsg = "<hr>\n";
+$sysMsg = "";
 $file = $fileName . '.rmd'; // todo: put this in a proper folder, maybe by user or something
 file_put_contents($file, $fileContents);
 
 if ( $testing > 1 ) {
-    $outputMsg .= "<p>RMD file location: " . dirname(__FILE__) . "</p>\n";
+    $sysMsg .= "<p>RMD file location: " . dirname(__FILE__) . "</p>\n";
 }
 
 // run renderer to generate files
@@ -48,13 +48,13 @@ if ( $runR ) {
     $execCommand = "\"$rScript\" \"$rFile\" $N";
 
     if ( $testing > 1 ) {
-        $outputMsg .= "<p>Exec'ing: $execCommand</p>\n";
+        $sysMsg .= "<p>Exec'ing: $execCommand</p>\n";
     }
 
     exec($execCommand, $output, $return);
 
     if ( $return !== 0 ) {
-        $outputMsg .= "<p>R failed to run.</p>\n";
+        $sysMsg .= "<p>R failed to run.</p>\n";
     } 
 }
 
@@ -66,7 +66,7 @@ foreach ( $fileFormats as $thisFormat) {
         $createdFileNames .= " " . $fullFileName;
     } else {
         if ( $testing > 1 ) {
-            $outputMsg .= "<p>File [$fullFileName] DNE</p>\n";
+            $sysMsg .= "<p>File [$fullFileName] DNE</p>\n";
         }
     }
 }
@@ -74,7 +74,7 @@ $createdFileNames = trim($createdFileNames);
 
 
 
-$outputData = array("error" => $errorMsg, "created_filenames" => $createdFileNames, "message" => $outputMsg);
+$outputData = array("error" => $errorMsg, "created_filenames" => $createdFileNames, "message" => $sysMsg);
 echo json_encode($outputData);
 
 ?>

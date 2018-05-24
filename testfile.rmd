@@ -1,0 +1,12 @@
+# Heading 1
+
+This is the first paragraph.
+
+The end
+
+# Here's a heading
+                        *** this is some bold text ***
+                        ```{r}
+                        Sys.time()
+                        ```
+                    

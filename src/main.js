@@ -23,7 +23,7 @@ function SetEvents() {
         }
     });
     // run from button
-    $(document).on('click', '#edit_menu > div > button', function() {
+    $(document).on('click', '#edit_menu > div > div > button', function() {
         RunEditFromButton(this);
     });
 
@@ -40,9 +40,16 @@ function RunEditFromKey(e) {
         var numItems = allMenus[k].items.length;
         for ( var i = 0 ; i < numItems ; i++ ) {
             var thisItem = allMenus[k].items[i];
-            if ( thisItem.isCtrl == e.ctrlKey && thisItem.isAlt == e.altKey && thisItem.isShift == e.shiftKey && thisItem.key == e.keyCode) {
-                // got a match, run the edit
-                EditText(thisItem)
+            if ( thisItem.isCtrl == e.ctrlKey && thisItem.isAlt == e.altKey && thisItem.isShift == e.shiftKey ) {
+                if ( thisItem.key == e.keyCode) {
+                    // got a match, run the edit
+                    EditText(thisItem)
+                } else if ( typeof(thisItem.key2) != "undefined" ) {
+                    if ( thisItem.key2 == e.keyCode ) {
+                        // this one has an alt key, and there's a match. Run the edit
+                        EditText(thisItem)
+                    }
+                }
             }
         }
     }
@@ -83,7 +90,8 @@ function SubmitData() {
 
             } else {
                 // error string detected
-                DisplayMessage(response.error);
+                DisplayMessage("Proccessing error");
+                DisplayMessage(response.error, "output");
             }
         }
     });
@@ -91,29 +99,39 @@ function SubmitData() {
 
 function DisplaySuccess(response) { 
     var msg = "";
+    var downloadMessage = "";
+    var sysMessage = "";
 
     msg += "<p>Completed successfully!</p>\n";
 
     // display all files that were created
     var allFileNames = GetAllFileNames();
     if ( allFileNames.length == 0 ) {
-        msg += '<p>No files created</p>\n';
+        downloadMessage += '<p>No files created</p>\n';
     } else {
         for ( var i = 0 ; i < allFileNames.length ; i++ ) {
             // make sure they exist before outputting a link
             if ( typeof(response.created_filenames) != "undefined" ) {
                 if ( response.created_filenames.indexOf(allFileNames[i]) != -1 ) {
-                    msg += '<p><a href="' + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
+                    downloadMessage += '<p><a href="' + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
                 }
             }
         }
     }
 
     if ( typeof(response.message) != "undefined" ) {
-        msg += "<div>" + response.message + "</div>\n";
+        sysMessage += "<div>" + response.message + "</div>\n";
     }
 
-    DisplayMessage(msg);
+
+    msg = msg.replace(/\n/g, "<br>");
+    msg = msg.replace(/\r/g, "<br>");
+    sysMessage = sysMessage.replace(/\n/g, "<br>");
+    sysMessage = sysMessage.replace(/\r/g, "<br>");
+
+    DisplayMessage(downloadMessage, "output")
+    DisplayMessage(msg, "live")
+    DisplayMessage(sysMessage, "system_message")
 }
 
 function GetAllFileNames() {
@@ -165,7 +183,6 @@ function CreateMenu() {
         html += "</div>\n";
     }
 
-    console.log(html);
     $('#edit_menu').html(html);
 }
 
@@ -201,11 +218,19 @@ function InsertInTextareaAtCursor(myField, myValue) {
     }
 }
 
-function DisplayMessage(msg) {
+function DisplayMessage(msg, where) {
+    if ( typeof(where) == "undefined" ) {
+        var where = "live";
+    }
+
+    if ( where == "system_message" ) {
+        msg = "<hr>\n<p>System log: </p>\n" + msg;
+    }
+
     msg = msg.replace(/\n/g, "<br>");
     msg = msg.replace(/\r/g, "<br>");
 
-    $('#output').html(msg);
+    $('#' + where).html(msg);
 }
 
 // todo: 
