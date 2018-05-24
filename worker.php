@@ -18,7 +18,6 @@ foreach ( $fileFormats as $thisFormat) {
     }
 }
 
-
 // write input data to file
 $fileContents = $_POST['rmd_text'];
 $errorMsg = "";
@@ -43,7 +42,7 @@ if ( $runR ) {
     
 
     $rScript = "C:\\Program Files\\R\\R-3.5.0\\bin\\Rscript.exe";
-    $rFile = "C:\\Users\\smm48\\Documents\\Projects\\Lab\\R\\RMDrender.R";
+    $rFile = "C:\\xampp\\htdocs\\RMDWebRenderer\\R\\RMDrender.R";
 
     $execCommand = "\"$rScript\" \"$rFile\" $N";
 
@@ -71,8 +70,6 @@ foreach ( $fileFormats as $thisFormat) {
     }
 }
 $createdFileNames = trim($createdFileNames);
-
-
 
 $outputData = array("error" => $errorMsg, "created_filenames" => $createdFileNames, "message" => $sysMsg);
 echo json_encode($outputData);
