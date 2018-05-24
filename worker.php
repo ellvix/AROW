@@ -2,7 +2,7 @@
 // what this file does: get data, send to R renderer, return files (?) and messages
 
 error_reporting(E_ALL & ~E_NOTICE);
-$testing = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$testing = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
 
 // wipe out the old files
@@ -11,7 +11,7 @@ $fileName = str_replace(" ", "", $fileName);
 $fileFormatsInput = trim($_POST['formats']);
 $fileFormats = explode(" ", $fileFormatsInput);
 foreach ( $fileFormats as $thisFormat) {
-    $fullFileName = $fileName . "." . $thisFormat;
+    $fullFileName = "./output/" . $fileName . "." . $thisFormat;
     if ( file_exists($fullFileName)) {
         unlink($fullFileName);
     } else {
@@ -22,7 +22,7 @@ foreach ( $fileFormats as $thisFormat) {
 $fileContents = $_POST['rmd_text'];
 $errorMsg = "";
 $sysMsg = "";
-$file = $fileName . '.rmd'; // todo: put this in a proper folder, maybe by user or something
+$file = "./output/" . $fileName . '.rmd'; // todo: put this in a proper folder, maybe by user or something
 file_put_contents($file, $fileContents);
 
 if ( $testing > 1 ) {
@@ -34,7 +34,7 @@ if ( $runR ) {
 
     // args for R file
     $N = "";
-    $N .= "\"" . dirname(__FILE__) . "\\" . $fileName . ".rmd\""; // the file path + name
+    $N .= "\"" . dirname(__FILE__) . "\\output\\" . $fileName . ".rmd\""; // the file path + name
     // format types
     if ( strlen($fileFormatsInput) > 0 ) {
         $N .= " formats=\"" . $fileFormatsInput . "\"";
@@ -60,7 +60,7 @@ if ( $runR ) {
 // check if the files were created (or later, return errors from R)
 $createdFileNames = "";
 foreach ( $fileFormats as $thisFormat) {
-    $fullFileName = $fileName . "." . $thisFormat;
+    $fullFileName = "./output/" . $fileName . "." . $thisFormat;
     if ( file_exists($fullFileName)) {
         $createdFileNames .= " " . $fullFileName;
     } else {

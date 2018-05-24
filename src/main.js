@@ -26,11 +26,6 @@ function SetEvents() {
     $(document).on('click', '#edit_menu > div > div > button', function() {
         RunEditFromButton(this);
     });
-
-    // todo: remove this
-    $(document).on('keydown', 'body', function(e) {
-        console.log(e.keyCode);
-    });
 }
 
 function RunEditFromKey(e) {
@@ -90,7 +85,7 @@ function SubmitData() {
 
             } else {
                 // error string detected
-                DisplayMessage("Proccessing error");
+                DisplayMessage("Processing error");
                 DisplayMessage(response.error, "output");
             }
         }
@@ -113,7 +108,7 @@ function DisplaySuccess(response) {
             // make sure they exist before outputting a link
             if ( typeof(response.created_filenames) != "undefined" ) {
                 if ( response.created_filenames.indexOf(allFileNames[i]) != -1 ) {
-                    downloadMessage += '<p><a href="' + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
+                    downloadMessage += '<p><a href="output/' + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
                 }
             }
         }
