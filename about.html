@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>About RMD Renderer</title>
+
+        <link rel="stylesheet" href="src/bootstrap/css/bootstrap.min.css" >
+        <link href="src/styles.css" rel="stylesheet"/>
+
+        <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
+        <script src="src/bootstrap/js/popper.min.js"></script>
+        <script src="src/bootstrap/js/bootstrap.min.js"></script>
+        <script src="src/classes.js"></script>
+        <script src="src/main.js"></script>
+
+    </head>
+
+    <body>
+        <div id="header_wrapper">
+            <a href="#main" class="sr-only">Skip to main content</a>
+            <header class="wrapper clearfix" role="banner" aria-label="header" id="header">
+                <div class="container relative">
+                    <div id="psu_icon_wrapper">
+                        <div id="psu_text_overlay">
+                            <a href="http://psu.edu" title="The Pennsylvania State University" class="psu-link">Penn State</a>
+                        </div>
+                        <img alt="Penn State University" title="Penn State University" src="src/psu_logo.png">
+                    </div>
+                    <div id="title_wrapper" class="text-center">
+                        <h1 class="title">RMD Renderer</h1>
+                    </div>
+                </div>
+            </header>
+            <nav id="topnav" role="navigation" aria-label="primary navigation">
+                <ul id="topnavul" role="menubar">
+                    <li><a href="/">Home</a></li>
+                    <li class="active"><a href="about.html">About</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <main id="main">
+        <div class="container margin_top">
+            <h2>About the RMD Web Renderer</h2>
+            <p>This is a project started by Sean McCurry and JooYoung Seo.</p>
+            <p>The idea is to create a web based method for users (specifically blind users, but anyone really) to create files from RMarkdown text.</p>
+            <p>The reasoning is that RMarkdown is considerably easier for blind users to work with than a full fledged application like PowerPoint or Adobe Acrobat. Simple RMarkdown can be created, and then rendered to any file type desired.</p>
+            <p>Current available outputs are planned to be html, docx, pptx, and pdf. </p>
+            <p>For more info, contact the devs: <a href="http://www.personal.psu.edu/smm48/">Sean McCurry</a>, <a href="https://github.com/jooyoungseo">JooYoung Seo</a>.</p>
+        </div>
+        </main>
+    </body>
+</html>
+
