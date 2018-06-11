@@ -1,7 +1,0 @@
-# Here's a heading
-*** this is some bold text ***
-Here's some R code:
-```{r}
-Sys.time()
-```
-                    
