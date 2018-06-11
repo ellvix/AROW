@@ -5,6 +5,11 @@
 // reporting
 error_reporting(E_ALL & ~E_NOTICE);
 $errorMsg = "";
+function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+    //throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+    $errorMsg .= "<p>Error ($errline) $errstr</p>\n";
+}
+set_error_handler("exception_error_handler");
 $sysMsg = "";
 $testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
@@ -103,8 +108,13 @@ if ( $haveData ) {
             exec($execCommand, $output, $return);
 
             if ( $return !== 0 ) {
+                if ( $testingLevel > 1 ) {
+                    $sysMsg .= "<h3>Output from R</h3>\n";
+                    $sysMsg .= "<div>" . implode($output) . "</div>\n";
+                }
+            } else {
                 $sysMsg .= "<p>R failed to run.</p>\n";
-            } 
+            }
         }
     } else {
         $sysMsg .= "<p>Unable to process data</p>\n";
@@ -130,9 +140,8 @@ echo json_encode($outputData);
 
 $pdo = null; // close con
 
-// bookmark. got stored proc working
-// next, modify the R file to connect to sql as well and pull the data. 
-// I'll need to send the p key id as a param
-// also note: the proc fails, it always updates never inserts. not sure why. deal with later
+// bookmark
+// for some reason the pdf is not being rendered when run from php. It works from cmd
+// also, pptx is failing ... it wants pandoc 2.0.5. not sure if I want to do that... disabling for now
 
 ?>

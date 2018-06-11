@@ -11,23 +11,22 @@ if ( length(args) > 0 ) {
     path = ""
     path = args[1]
 
-    if ( length(args) == 1 ) {
-        # render some html, as default
-        outputType = "html_document"
-    } else {
-        outputType <- c()
-        if ( 'html' %in% args ) {
-            outputType <- c(outputType, 'html_document')
-        }
-        if ( 'docx' %in% args ) {
-            outputType <- c(outputType, 'docx_document')
-        }
-        if ( 'pdf' %in% args ) {
-            outputType <- c(outputType, 'pdf_document')
-        }
-        if ( 'pptx' %in% args ) {
-            outputType <- c(outputType, 'html_document')
-        }
+    outputType <- c()
+    if ( grepl('html', args[3])) {
+        outputType <- c(outputType, 'html_document')
+    }
+    if ( grepl('docx', args[3] )) {
+        outputType <- c(outputType, 'word_document')
+    }
+    if ( grepl('pdf', args[3] )) {
+        outputType <- c(outputType, 'pdf_document')
+    }
+    if ( grepl('pptx', args[3] )) {
+        outputType <- c(outputType, 'powerpoint_presentation')
+    }
+    if ( length(outputType) == 0 ) {
+        # default
+        outputType <- c(outputType, 'html_document')
     }
 }
 

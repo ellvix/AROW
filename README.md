@@ -10,7 +10,9 @@ Install R and python. Must have python 2.x and R 3.x (which is current R as of M
 
 Install RMarkdown library (R command line: [install.packages("rmarkdown", repos = "https://cran.revolutionanalytics.com")])
 
-Missing a step here: need pandoc or similar to be able to render anything beyond html files. 
+Install tinytex(https://yihui.name/tinytex/)
+
+Pandoc should be installed by default, but get that too if there are issues. (must have version 2.0.5 or higher)
 
 In your worker.php file, point the $rScript to your Rscript.exe (default is c:/Program Files/R/R-3.5.0/bin/Rscript.exe). Point $rFile to your R renderer file (default is webserverLocation/R/RMDrenderer.R)
 
