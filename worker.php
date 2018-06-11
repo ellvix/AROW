@@ -1,12 +1,13 @@
 <?php
-// what this file does: get data, send to R renderer, return files (?) and messages
+
+// what this file does: get data, saves a copy to sql, saves an rmd file, send to R renderer, return rendered files and messages
 
 // reporting
 error_reporting(E_ALL & ~E_NOTICE);
 $errorMsg = "";
 $sysMsg = "";
 $testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
-$runR = false;
+$runR = true;
 if ( $testingLevel > 1 ) {
     $time = date('Y-m-d H:i:s');
     $sysMsg .= "<p>Timestamp: $time</p>\n";
@@ -38,65 +39,82 @@ if ( $haveData ) {
     $stmt->execute();
     $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $stmt->closeCursor();
-    if ( $row && $testingLevel > 1 ) {
-        $sysMsg .= "row data 0 [" . $row[0]['id'] . "]";
+    $id = 0; // default val so we can detect failure
+    if ( isset ( $row[0]['id'] ) ) {
+        $id = (int)$row[0]['id'];
     }
-
-    // wipe out the old files
-    $fileName = $_POST['rmd_name'];
-    $fileName = str_replace(" ", "", $fileName);
-    $fileFormatsInput = trim($_POST['formats']);
-    $fileFormats = explode(" ", $fileFormatsInput);
-    foreach ( $fileFormats as $thisFormat) {
-        $fullFileName = "./output/" . $fileName . "." . $thisFormat;
-        if ( file_exists($fullFileName)) {
-            unlink($fullFileName);
-        } else {
-        }
-    }
-
-    // write input data to file
-    $fileContents = $_POST['rmd_text'];
-    $file = "./output/" . $fileName . '.rmd'; // todo: put this in a proper folder, maybe by user or something
-    file_put_contents($file, $fileContents);
-
     if ( $testingLevel > 1 ) {
-        $sysMsg .= "<p>RMD file location: " . dirname(__FILE__) . "</p>\n";
+        $sysMsg .= "<p>ID: $id</p>\n";
     }
 
-    // run renderer to generate files
-    if ( $runR ) {
+    if ( $id > 0 ) 
+    {
 
-        // args for R file
-        $N = "";
-        $N .= "\"" . dirname(__FILE__) . "\\output\\" . $fileName . ".rmd\""; // the file path + name
-        // format types
-        if ( strlen($fileFormatsInput) > 0 ) {
-            $N .= " formats=\"" . $fileFormatsInput . "\"";
+        $fileName = $_POST['rmd_name'];
+        $fileName = str_replace(" ", "", $fileName);
+        $fileFormatsInput = trim($_POST['formats']);
+        $fileFormats = explode(" ", $fileFormatsInput);
+        $dir = "./output/$id";
+
+        // wipe out the old files
+        if ( file_exists($dir) ) {
+            foreach ( $fileFormats as $thisFormat) {
+                $fullFileName = "$dir/$fileName.$thisFormat";
+                if ( file_exists($fullFileName)) {
+                    unlink($fullFileName);
+                } 
+            }
+            rmdir($dir);
         }
 
-
-        $rScript = "C:\\Program Files\\R\\R-3.5.0\\bin\\Rscript.exe";
-        $rFile = "C:\\xampp\\htdocs\\RMDWebRenderer\\R\\RMDrender.R";
-
-        $execCommand = "\"$rScript\" \"$rFile\" $N";
+        // write input data to file
+        $fileContents = $_POST['rmd_text'];
+        $file = "$dir/$fileName.rmd"; 
+        mkdir($dir);
+        file_put_contents($file, $fileContents);
 
         if ( $testingLevel > 1 ) {
-            $sysMsg .= "<p>Exec'ing: $execCommand</p>\n";
+            $sysMsg .= "<p>RMD file location: " . dirname(__FILE__) . "</p>\n";
         }
 
-        exec($execCommand, $output, $return);
+        // run renderer to generate files
+        if ( $runR ) {
 
-        if ( $return !== 0 ) {
-            $sysMsg .= "<p>R failed to run.</p>\n";
-        } 
+            // args for R file
+            $args = "";
+            $args .= "\"" . dirname(__FILE__) . "\\output\\$id\\$fileName.rmd\""; // the file path + name
+            $args .= " id=\"$id\"";
+            // format types
+            if ( strlen($fileFormatsInput) > 0 ) {
+                $args .= " formats=\"" . $fileFormatsInput . "\"";
+            }
+
+
+
+            $rScript = "C:\\Program Files\\R\\R-3.5.0\\bin\\Rscript.exe";
+            $rFile = "C:\\xampp\\htdocs\\RMDWebRenderer\\R\\RMDrender.R";
+
+            $execCommand = "\"$rScript\" \"$rFile\" $args";
+
+            if ( $testingLevel > 1 ) {
+                $sysMsg .= "<p>Exec'ing: $execCommand</p>\n";
+            }
+
+            exec($execCommand, $output, $return);
+
+            if ( $return !== 0 ) {
+                $sysMsg .= "<p>R failed to run.</p>\n";
+            } 
+        }
+    } else {
+        $sysMsg .= "<p>Unable to process data</p>\n";
     }
 }
 
 // check if the files were created (or later, return errors from R)
 $createdFileNames = "";
 foreach ( $fileFormats as $thisFormat) {
-    $fullFileName = "./output/" . $fileName . "." . $thisFormat;
+    $fullFileName = "./output/$id/$fileName.$thisFormat";
     if ( file_exists($fullFileName)) {
         $createdFileNames .= " " . $fullFileName;
     } else {

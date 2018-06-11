@@ -32,3 +32,4 @@ if ( length(args) > 0 ) {
 }
 
 rmarkdown::render(path, output_format=outputType)
+
