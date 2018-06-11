@@ -77,6 +77,7 @@ function SubmitData() {
         type: "POST", 
         data: data,
         success: function(r) {
+            console.log(r);
             var response = JSON.parse(r);
             var err = response.error;
             if ( err.toString() == "" ) {
@@ -219,7 +220,7 @@ function DisplayMessage(msg, where) {
     }
 
     if ( where == "system_message" ) {
-        msg = "<hr>\n<p>System log: </p>\n" + msg;
+        msg = "<hr>\n<h3>System log: </h3>\n" + msg;
     }
 
     msg = msg.replace(/\n/g, "<br>");
