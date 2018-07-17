@@ -42,11 +42,10 @@
 
         <main id="main">
         <div class="container margin_top">
-            <h2>Create some RMD and render it</h2>
-            <p>The idea here is to have a web interface to create an rmd file (or string at least), then send that to php land, process the file or string with R, render a bunch of other files, and serve those to the client</p>
+            <h2>Render some RMarkdown</h2>
 
             <div id="input">
-                <p>To get started, type some RMarkdown in the text box and submit. Default is fine</p>
+                <p>Type some Markdown or RMarkdown in the text box, choose your output filename and the file types.</p>
                 <p>This system requires JavaScript.</p>
                 <div>
                     <p><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="margin_lr" value="MyFile"></p>
@@ -71,19 +70,21 @@ Sys.time()
                     <p>Create which files?</p>
                     <div class="col-sm-2"><label for="choice_html">html</label><input type="checkbox" class="format_choice margin_lr" id="choice_html" checked></div>
                     <div class="col-sm-2"><label for="choice_docx">docx</label><input type="checkbox" class="format_choice margin_lr" id="choice_docx"></div>
-                    <div class="col-sm-2"><label for="choice_pdf">pdf</label><input type="checkbox" class="format_choice margin_lr" id="choice_pdf" checked></div>
+                    <div class="col-sm-2"><label for="choice_pdf">pdf</label><input type="checkbox" class="format_choice margin_lr" id="choice_pdf"></div>
                     <!--<div class="col-sm-2"><label for="choice_pptx">pptx</label><input type="checkbox" class="format_choice margin_lr" id="choice_pptx"></div>//-->
                 </div>
                 <div class="clearfix"></div>
                 <p class="text-center"><button class="btn btn-primary" id="main_submit">Submit</button></p>
             </div>
 
-            <div id="live" aria-live="polite">
+            <div id="live_sr" aria-live="polite" class="sr-only">
+                Any messages will be displayed here.
+            </div>
+            <div id="live_visual" aria-hidden="true">
                 Any messages will be displayed here.
             </div>
             <div id="output">
             </div>
-            <div>
             <div id="system_message">
             </div>
 

@@ -2,6 +2,12 @@
 
 // what this file does: get data, saves a copy to sql, saves an rmd file, send to R renderer, return rendered files and messages
 
+// control vars
+$sysMsg = "";
+$testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$runR = true;
+$platform = "aws"; // aws, xampp (local)
+
 // reporting
 error_reporting(E_ALL & ~E_NOTICE);
 $errorMsg = "";
@@ -10,24 +16,29 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
     $errorMsg .= "<p>Error ($errline) $errstr</p>\n";
 }
 set_error_handler("exception_error_handler");
-$sysMsg = "";
-$testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
-$runR = true;
 if ( $testingLevel > 1 ) {
     $time = date('Y-m-d H:i:s');
     $sysMsg .= "<p>Timestamp: $time</p>\n";
 }
 
 // connections
-include("../inc/dbinfo.inc");
-$pdo = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_DATABASE, DB_USERNAME, DB_PASSWORD);
+// bookmark: sql isn't connecting to the AWS RDB, even though phpMyAdmin is fine
+$sqlIsWorking = false;
+try {
+    include("../inc/dbinfo.inc");
+    $pdo = new PDO("mysql:host=" . DB_SERVER . ";port=3306;dbname=" . DB_DATABASE, DB_USERNAME, DB_PASSWORD, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+
+    $sqlIsWorking = true;
+} catch (Exception $e) {
+    $sysMsg .= "<p>sql err: " . $e->getMessage() . "</p>\n";
+}
 
 $haveData = false;
 if ( isset($_POST['rmd_name']) && ! empty($_POST['rmd_name']) && isset($_POST['rmd_text']) && ! empty($_POST['rmd_text']) && isset($_POST['formats']) && ! empty($_POST['formats']) ) {
     $haveData = true;
 }
 
-if ( $haveData ) {
+if ( $haveData && $sqlIsWorking ) {
     // gather info and save to sql (return id of that row)
     $name = $_POST['rmd_name'];
     $text = $_POST['rmd_text'];
@@ -79,7 +90,7 @@ if ( $haveData ) {
         file_put_contents($file, $fileContents);
 
         if ( $testingLevel > 1 ) {
-            $sysMsg .= "<p>RMD file location: " . dirname(__FILE__) . "</p>\n";
+            $sysMsg .= "<p>RMD file location: $dir</p>\n";
         }
 
         // run renderer to generate files
@@ -87,17 +98,23 @@ if ( $haveData ) {
 
             // args for R file
             $args = "";
-            $args .= "\"" . dirname(__FILE__) . "\\output\\$id\\$fileName.rmd\""; // the file path + name
+            $argLocalPath = "\\output\\$id\\$fileName.rmd\"";
+            if ( $platform == "aws" ) {
+                $argLocalPath = "/output/$id/$fileName.rmd\"";
+            }
+            $args .= "\"" . dirname(__FILE__) . $argLocalPath; // the file path + name
             $args .= " id=\"$id\"";
             // format types
             if ( strlen($fileFormatsInput) > 0 ) {
                 $args .= " formats=\"" . $fileFormatsInput . "\"";
             }
 
-
-
-            $rScript = "C:\\Program Files\\R\\R-3.5.0\\bin\\Rscript.exe";
+            $rScript = "C:\\Program Files\\R\\R-3.5.0\\bin\\Rscript.exe"; // xampp localhost default
             $rFile = "C:\\xampp\\htdocs\\RMDWebRenderer\\R\\RMDrender.R";
+            if ( $platform == "aws" ) {
+                $rScript = "/usr/lib/R/bin/Rscript"; // aws linux
+                $rFile = "/var/www/html/R/RMDrender.R";
+            }
 
             $execCommand = "\"$rScript\" \"$rFile\" $args";
 
@@ -107,13 +124,14 @@ if ( $haveData ) {
 
             exec($execCommand, $output, $return);
 
-            if ( $return !== 0 ) {
+            if ( isset($output) ) {
                 if ( $testingLevel > 1 ) {
                     $sysMsg .= "<h3>Output from R</h3>\n";
-                    $sysMsg .= "<div>" . implode($output) . "</div>\n";
+                    $sysMsg .= "<div>" . print_r($output, true) . "</div>\n";
                 }
             } else {
-                $sysMsg .= "<p>R failed to run.</p>\n";
+                $sysMsg .= "<h3>R failed to run.</h3>\n";
+                $sysMsg .= "<div>" . print_r($output, true) . "</div>\n";
             }
         }
     } else {
@@ -135,13 +153,14 @@ foreach ( $fileFormats as $thisFormat) {
 }
 $createdFileNames = trim($createdFileNames);
 
-$outputData = array("error" => $errorMsg, "created_filenames" => $createdFileNames, "message" => $sysMsg);
+$outputData = array("error" => $errorMsg, "ID" => $id, "created_filenames" => $createdFileNames, "message" => $sysMsg);
 echo json_encode($outputData);
 
 $pdo = null; // close con
 
 // bookmark
 // for some reason the pdf is not being rendered when run from php. It works from cmd
+// possible fix https://github.com/jgm/pandoc/issues/1587
 // also, pptx is failing ... it wants pandoc 2.0.5. not sure if I want to do that... disabling for now
 
 ?>

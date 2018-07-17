@@ -43,7 +43,14 @@
         <main id="main">
 <?php
 
-echo "<p>PHP is Running, and has created this text</p>\n";
+
+echo "<p>writeable? </p>";
+
+if ( is_writeable(__DIR__) ) {
+    echo "<p>yeah</p>";
+} else {
+    echo "<p>no</p>";
+}
 
 ?>
         </main>

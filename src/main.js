@@ -59,6 +59,10 @@ function RunEditFromButton(sender) {
 }
 
 function SubmitData() {
+
+    $('#output').html('');
+    $('#system_message').html('');
+
     var data = {};
     data.rmd_name = $('#rmd_name').val();
     data.rmd_text = $('#rmd_text').val();
@@ -77,7 +81,7 @@ function SubmitData() {
         type: "POST", 
         data: data,
         success: function(r) {
-            console.log(r);
+            //console.log(r);
             var response = JSON.parse(r);
             var err = response.error;
             if ( err.toString() == "" ) {
@@ -109,7 +113,7 @@ function DisplaySuccess(response) {
             // make sure they exist before outputting a link
             if ( typeof(response.created_filenames) != "undefined" ) {
                 if ( response.created_filenames.indexOf(allFileNames[i]) != -1 ) {
-                    downloadMessage += '<p><a href="output/' + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
+                    downloadMessage += '<p><a href="output/' + response.ID + "/" + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
                 }
             }
         }
@@ -126,7 +130,8 @@ function DisplaySuccess(response) {
     sysMessage = sysMessage.replace(/\r/g, "<br>");
 
     DisplayMessage(downloadMessage, "output")
-    DisplayMessage(msg, "live")
+    DisplayMessage(msg, "live_sr")
+    DisplayMessage(msg, "live_visual")
     DisplayMessage(sysMessage, "system_message")
 }
 
