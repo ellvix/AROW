@@ -18,6 +18,8 @@ In your worker.php file, point the $rScript to your Rscript.exe (default is c:/P
 
 Some SQL is needed (though it could be ripped out in a custom install). SQL file is attached for the table and procedure being used. Not included is a dbinfo.inc file at ../inc/dbinfo.inc that has server / pass stuff as standard. 
 
+Current working demo available at ec2-18-222-198-44.us-east-2.compute.amazonaws.com
+
 ## Use
 
 Should be self explanatory. Write some RMarkdown in the textarea, using the buttons or shortcuts for syntax. 
