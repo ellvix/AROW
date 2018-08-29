@@ -207,6 +207,9 @@ hr.light_hr {
     border-left: 1px solid rgba(0, 0, 0, .4);
 }
 
+.hidden {
+    display: none;
+}
 
 select:disabled, .disabled:not(.btn-primary) {
     background-color: rgba(0, 0, 0, .1);
@@ -345,3 +348,11 @@ input[type="radio"] {
     margin-left: 1em;
 }
 
+#menu_search_ddl {
+    max-height: 50em;
+    overflow-y: scroll;
+}
+#search_shortcuts_input {
+    margin: 0 5% 3%;
+    width: 90%;
+}

@@ -14,10 +14,50 @@ function SetEvents() {
         SubmitData();
     });
 
+    // go to search box: alt + /
+    $(document).on('keydown', 'body', function(e) {
+        if ( e.keyCode == 191 && e.altKey ) {
+            $('#menu_search_ddl').dropdown('toggle');
+        }
+    });
+    $(document).on('shown.bs.dropdown', '#menu_search_wrapper', function() {
+        $('#search_shortcuts_input').val('');
+        FilterSearch();
+
+        $('#search_shortcuts_input').focus();
+    });
+    $(document).on('keyup', '#search_shortcuts_input', function(e) {
+        FilterSearch();
+    });
+
+    // arrow up and down in search box
+    $(document).on('keyup', '#menu_search_ddl > button:not(.hidden), #menu_search_ddl > input#search_shortcuts_input', function(e) {
+
+        if ( e.keyCode == 40 || e.keyCode == 38 ) {
+            var currentSet = $('#menu_search_ddl > button:not(.hidden), #menu_search_ddl > input#search_shortcuts_input');
+            var currentIndex = currentSet.index(this);
+            var fullSet = $('#menu_search_ddl > button, #menu_search_ddl > input#search_shortcuts_input');
+            var fullIndex = fullSet.index(this);
+
+            // go to the next object if there are hidden things in between
+            if ( e.keyCode == 40 && (currentIndex < currentSet.length) ) {
+                if ( currentSet[currentIndex+1] != fullSet[fullIndex+1] || currentIndex == 0 ) {
+                    $(currentSet[currentIndex+1]).focus();
+                }
+            } else if ( e.keyCode == 38 && currentIndex > 0 ) {
+                if ( currentSet[currentIndex-1] != fullSet[fullIndex-1] || currentIndex == 1 ) {
+                    $(currentSet[currentIndex-1]).focus();
+                }
+            }
+        }
+
+    });
+
     // edit menu events
     // run from key binding
     $(document).on('keydown', '#rmd_text', function(e) {
         // all edit events MUST start with ctrl or alt, so, 
+        // exceptions first
         if ( e.ctrlKey || e.altKey ) {
             RunEditFromKey(e);
         }
@@ -56,6 +96,23 @@ function RunEditFromButton(sender) {
     var thisItem = allMenus[menuIndex].items[itemIndex];
 
     EditText(thisItem);
+}
+
+function FilterSearch() {
+    var filter = $('#search_shortcuts_input').val().toLowerCase();
+
+    $('#menu_search_ddl > button.dropdown-item').each(function() {
+        var thisText = $(this).html().toLowerCase();
+        var show = thisText.startsWith(filter);
+
+        if (show) {
+            $(this).removeClass('hidden');
+        } else {
+            $(this).addClass('hidden');
+        }
+    });
+
+
 }
 
 function SubmitData() {
@@ -149,17 +206,25 @@ function GetAllFileNames() {
 }
 
 function CreateMenu() {
-    var html = "";
+    var menuHtml = ""; // individual shortcut menus
+    var searchHtmlFull = ""; // all in one searchable shortcut menu
+    var searchHtml = "";
     var allMenus = GetFullMenuVar();
+
+    searchHtmlFull += '<div class="inline" id="menu_search_wrapper">\n';
+    searchHtml += '<button class="btn btn-default dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
+    searchHtml += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl">\n';
+    searchHtml += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list">';
+
 
     for ( var k = 0 ; k < allMenus.length ; k++ ) {
         var menuName = allMenus[k].label;
         var menuId = "menu_" + k;
         var menuItems = allMenus[k].items;
 
-        html += '<div class="inline">\n';
-        html += '<button class="btn btn-default dropdown-toggle" type="button" id="' + menuId + '" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">' + menuName + ' <i class="caret"></i></button>\n';
-        html += '<div class="dropdown-menu" aria-labelledby="' + menuId + '">\n';
+        menuHtml += '<div class="inline">\n';
+        menuHtml += '<button class="btn btn-default dropdown-toggle" type="button" id="' + menuId + '" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">' + menuName + ' <i class="caret"></i></button>\n';
+        menuHtml += '<div class="dropdown-menu" aria-labelledby="' + menuId + '">\n';
 
         var numItems = menuItems.length;
         for ( var i = 0 ; i < numItems ; i++ ) {
@@ -177,12 +242,21 @@ function CreateMenu() {
             }
             buttonText += thisItem.keyName + ')</span>';
 
-            html += '<button class="invis_button dropdown-item" id="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
+            var buttonHtml = '<button class="invis_button dropdown-item" id="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
+            menuHtml += buttonHtml;
+            searchHtml += buttonHtml;
         }
         
-        html += "</div>\n";
-        html += "</div>\n";
+        menuHtml += "</div>\n";
+        menuHtml += "</div>\n";
     }
+
+
+
+    searchHtml += "</div>\n";
+    searchHtmlFull += searchHtml + "</div>\n";
+
+    var html = searchHtmlFull + menuHtml;
 
     $('#edit_menu').html(html);
 }
