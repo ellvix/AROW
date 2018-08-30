@@ -55,7 +55,7 @@ function SetEvents() {
         }
     });
     // run from button
-    $(document).on('click', '#edit_menu > div > div > button', function() {
+    $(document).on('click', '#edit_menu > div > div > button, #autocomplete_list > button', function() {
         RunEditFromButton(this);
     });
 }
@@ -82,8 +82,9 @@ function RunEditFromKey(e) {
     }
 }
 function RunEditFromButton(sender) {
-    var menuIndex = Number($(sender).attr('id').substr(13, 1)); // note: this will crash if we have more than 9 menus, and will need a regex lookup instead
-    var itemIndex = Number($(sender).attr('id').substr(15)); 
+    var key = $(sender).attr('data-item');
+    var menuIndex = Number(key.substr(13, 1)); // note: this will crash if we have more than 9 menus, and will need a regex lookup instead
+    var itemIndex = Number(key.substr(15)); 
     var allMenus = GetFullMenuVar();
     var thisItem = allMenus[menuIndex].items[itemIndex];
 
@@ -251,8 +252,8 @@ function CreateMenu() {
             }
             buttonText += thisItem.keyName + ')</span>';
 
-            var buttonHtml = '<button class="invis_button dropdown-item" id="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
-            var listHtml = '<button role="option" class="invis_button dropdown-item">' + buttonText + '</button>\n';
+            var buttonHtml = '<button class="invis_button dropdown-item" data-item="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
+            var listHtml = '<button role="option" class="invis_button dropdown-item" data-item="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
             menuHtml += buttonHtml;
             searchHtml += listHtml;
         }
@@ -301,6 +302,8 @@ function InsertInTextareaAtCursor(myField, myValue) {
         myField.value = myField.value.substring(0, startPos)
             + myValue
             + myField.value.substring(endPos, myField.value.length);
+        myField.selectionStart = startPos + myValue.length;
+        myField.selectionEnd = startPos + myValue.length;
     } else {
         myField.value += myValue;
     }
