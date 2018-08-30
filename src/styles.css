@@ -356,3 +356,6 @@ input[type="radio"] {
     margin: 0 5% 3%;
     width: 90%;
 }
+#autocomplete_list > div {
+    padding: .2em 1em;
+}

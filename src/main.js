@@ -30,24 +30,16 @@ function SetEvents() {
         FilterSearch();
     });
 
-    // arrow up and down in search box
-    $(document).on('keyup', '#menu_search_ddl > button:not(.hidden), #menu_search_ddl > input#search_shortcuts_input', function(e) {
-
+    // arrow up and down to search box
+    $(document).on('keyup', '#menu_search_ddl > div > button:not(.hidden), #menu_search_ddl > input#search_shortcuts_input', function(e) {
         if ( e.keyCode == 40 || e.keyCode == 38 ) {
-            var currentSet = $('#menu_search_ddl > button:not(.hidden), #menu_search_ddl > input#search_shortcuts_input');
+            var currentSet = $('#menu_search_ddl > div > button:not(.hidden), #menu_search_ddl > input#search_shortcuts_input');
             var currentIndex = currentSet.index(this);
-            var fullSet = $('#menu_search_ddl > button, #menu_search_ddl > input#search_shortcuts_input');
-            var fullIndex = fullSet.index(this);
 
-            // go to the next object if there are hidden things in between
-            if ( e.keyCode == 40 && (currentIndex < currentSet.length) ) {
-                if ( currentSet[currentIndex+1] != fullSet[fullIndex+1] || currentIndex == 0 ) {
-                    $(currentSet[currentIndex+1]).focus();
-                }
-            } else if ( e.keyCode == 38 && currentIndex > 0 ) {
-                if ( currentSet[currentIndex-1] != fullSet[fullIndex-1] || currentIndex == 1 ) {
-                    $(currentSet[currentIndex-1]).focus();
-                }
+            if ( e.keyCode == 40 && currentIndex == 0 ) {
+                $(currentSet[currentIndex+1]).focus();
+            } else if ( e.keyCode == 38 && currentIndex == 1 ) {
+                $(currentSet[currentIndex-1]).focus();
             }
         }
 
@@ -101,16 +93,32 @@ function RunEditFromButton(sender) {
 function FilterSearch() {
     var filter = $('#search_shortcuts_input').val().toLowerCase();
 
-    $('#menu_search_ddl > button.dropdown-item').each(function() {
-        var thisText = $(this).html().toLowerCase();
-        var show = thisText.startsWith(filter);
+    // we duplicate the potential list, filter it, and add it
+    var list = $('#search_storage > div').clone();
 
-        if (show) {
-            $(this).removeClass('hidden');
+    list.find('button.dropdown-item').each(function() {
+        var thisText = $(this).html().toLowerCase();
+        var show = thisText.indexOf(filter) != -1 ;
+
+        if (show && filter.length > 0) {
         } else {
-            $(this).addClass('hidden');
+            $(this).remove();
         }
     });
+
+    $('#menu_search_ddl > #autocomplete_list').remove();
+    $('#menu_search_ddl').append(list);
+
+
+    var numItems = list.find('button.dropdown-item').length;
+    if ( numItems > 0 ) {
+        $('#live_sr_search').html("<p>" + numItems + " available</p>\n");
+
+        $('#search_shortcuts_input').attr('aria-owns', 'autocomplete_list');
+        $('#search_shortcuts_input').attr('aria-activedescendant', 'autocomplete_list');
+        $('#search_shortcuts_input').attr('aria-expanded', 'true');
+    } else {
+    }
 
 
 }
@@ -212,9 +220,10 @@ function CreateMenu() {
     var allMenus = GetFullMenuVar();
 
     searchHtmlFull += '<div class="inline" id="menu_search_wrapper">\n';
-    searchHtml += '<button class="btn btn-default dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
-    searchHtml += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl">\n';
-    searchHtml += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list">';
+    searchHtmlFull += '<button class="btn btn-default dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
+    searchHtmlFull += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl">\n';
+    searchHtmlFull += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list" aria-haspopup="false" aria-expanded="false">\n';
+    searchHtml += '<div role="listbox" id="autocomplete_list" aria-expanded="true">\n';
 
 
     for ( var k = 0 ; k < allMenus.length ; k++ ) {
@@ -243,8 +252,9 @@ function CreateMenu() {
             buttonText += thisItem.keyName + ')</span>';
 
             var buttonHtml = '<button class="invis_button dropdown-item" id="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
+            var listHtml = '<button class="invis_button dropdown-item">' + buttonText + '</button>\n';
             menuHtml += buttonHtml;
-            searchHtml += buttonHtml;
+            searchHtml += listHtml;
         }
         
         menuHtml += "</div>\n";
@@ -252,9 +262,12 @@ function CreateMenu() {
     }
 
 
-
     searchHtml += "</div>\n";
-    searchHtmlFull += searchHtml + "</div>\n";
+    searchHtmlFull += "</div>\n";
+    searchHtmlFull += "</div>\n";
+
+    // store the actual list somewhere else
+    $('#search_storage').html(searchHtml);
 
     var html = searchHtmlFull + menuHtml;
 
