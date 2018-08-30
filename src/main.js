@@ -252,7 +252,7 @@ function CreateMenu() {
             buttonText += thisItem.keyName + ')</span>';
 
             var buttonHtml = '<button class="invis_button dropdown-item" id="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
-            var listHtml = '<button class="invis_button dropdown-item">' + buttonText + '</button>\n';
+            var listHtml = '<button role="option" class="invis_button dropdown-item">' + buttonText + '</button>\n';
             menuHtml += buttonHtml;
             searchHtml += listHtml;
         }
@@ -269,7 +269,7 @@ function CreateMenu() {
     // store the actual list somewhere else
     $('#search_storage').html(searchHtml);
 
-    var html = searchHtmlFull + menuHtml;
+    var html = menuHtml + searchHtmlFull;
 
     $('#edit_menu').html(html);
 }
