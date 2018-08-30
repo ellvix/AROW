@@ -51,7 +51,7 @@ function GetFullMenuVar() {
     menuItem = {};
     menuItem.label = "Reference";
     menuItem.key = 18; 
-    menuItem.keyName = "R";
+    menuItem.keyName = "F";
     menuItem.isShift = true;
     menuItem.isCtrl = true;
     menuItem.isAlt = false;
