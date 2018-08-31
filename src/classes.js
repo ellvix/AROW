@@ -8,10 +8,15 @@ function GetFullMenuVar() {
     // define all menu items for each set
 
     menuHeading.label = "Insert";
+    menuHeading.key = 73; 
+    menuHeading.keyName = "I";
+    menuHeading.isShift = false;
+    menuHeading.isCtrl = true;
+    menuHeading.isAlt = true;
     menuHeading.items = [];
 
     menuItem = {};
-    menuItem.label = "Header / Preamble";
+    menuItem.label = "Heading / Preamble";
     menuItem.key = 72; 
     menuItem.keyName = "H";
     menuItem.isShift = true;
@@ -60,7 +65,7 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Header 1";
+    menuItem.label = "Heading 1";
     menuItem.key = 49; 
     menuItem.keyName = "1";
     menuItem.isShift = false;
@@ -71,7 +76,7 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Header 2";
+    menuItem.label = "Heading 2";
     menuItem.key = 50; 
     menuItem.keyName = "2";
     menuItem.isShift = false;
@@ -82,7 +87,7 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Header 3";
+    menuItem.label = "Heading 3";
     menuItem.key = 51; 
     menuItem.keyName = "3";
     menuItem.isShift = false;
@@ -93,7 +98,7 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Header 4";
+    menuItem.label = "Heading 4";
     menuItem.key = 52; 
     menuItem.keyName = "4";
     menuItem.isShift = false;
@@ -104,7 +109,7 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Header 5";
+    menuItem.label = "Heading 5";
     menuItem.key = 53; 
     menuItem.keyName = "5";
     menuItem.isShift = false;
@@ -115,7 +120,7 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Header 6";
+    menuItem.label = "Heading 6";
     menuItem.key = 54; 
     menuItem.keyName = "6";
     menuItem.isShift = false;
@@ -131,6 +136,11 @@ function GetFullMenuVar() {
 
     menuHeading = {};
     menuHeading.label = "Format";
+    menuHeading.key = 70; 
+    menuHeading.keyName = "F";
+    menuHeading.isShift = false;
+    menuHeading.isCtrl = true;
+    menuHeading.isAlt = true;
     menuHeading.items = [];
 
     menuItem = {};
@@ -249,6 +259,11 @@ function GetFullMenuVar() {
 
     menuHeading = {};
     menuHeading.label = "Maths Symbols";
+    menuHeading.key = 89; 
+    menuHeading.keyName = "Y";
+    menuHeading.isShift = false;
+    menuHeading.isCtrl = true;
+    menuHeading.isAlt = true;
     menuHeading.items = [];
 
     menuItem = {};
@@ -413,6 +428,11 @@ function GetFullMenuVar() {
 
     menuHeading = {};
     menuHeading.label = "Maths Structure";
+    menuHeading.key = 84; 
+    menuHeading.keyName = "T";
+    menuHeading.isShift = false;
+    menuHeading.isCtrl = true;
+    menuHeading.isAlt = true;
     menuHeading.items = [];
 
     menuItem = {};
@@ -532,6 +552,11 @@ function GetFullMenuVar() {
 
     menuHeading = {};
     menuHeading.label = "Greek Letters";
+    menuHeading.key = 71; 
+    menuHeading.keyName = "G";
+    menuHeading.isShift = false;
+    menuHeading.isCtrl = true;
+    menuHeading.isAlt = true;
     menuHeading.items = [];
 
     menuItem = {};

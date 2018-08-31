@@ -10,6 +10,12 @@ function Init() {
 
 }
 function SetEvents() {
+
+    // temp / testing
+    $(document).on('keydown', 'body', function(e) {
+        //console.log(e.keyCode);
+    });
+
     $(document).on('click', '#main_submit', function() {
         SubmitData();
     });
@@ -43,6 +49,22 @@ function SetEvents() {
             }
         }
 
+    });
+
+    // go to edit menu
+    $(document).on('keyup', 'body', function(e) {
+        // triggers for menu all start with alt ctrl, so 
+        // AND YES I KNOW IT WOULD BE BETTER TO WRITE THIS TO PULL FROM THE CLASS.
+        if ( e.ctrlKey && e.altKey ) {
+            var allMenus = GetFullMenuVar();
+            for ( var i = 0 ; i < allMenus.length ; i++ ) {
+                if ( allMenus[i].key == e.keyCode ) {
+                    $('#menu_' + i).focus(); 
+                    $('#menu_' + i).dropdown('toggle');
+                }
+            }
+
+        }
     });
 
     // edit menu events
@@ -228,12 +250,26 @@ function CreateMenu() {
 
 
     for ( var k = 0 ; k < allMenus.length ; k++ ) {
-        var menuName = allMenus[k].label;
+        var menu = allMenus[k];
         var menuId = "menu_" + k;
-        var menuItems = allMenus[k].items;
+        var menuItems = menu.items;
 
         menuHtml += '<div class="inline">\n';
-        menuHtml += '<button class="btn btn-default dropdown-toggle" type="button" id="' + menuId + '" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">' + menuName + ' <i class="caret"></i></button>\n';
+        menuHtml += '<button class="btn btn-default dropdown-toggle" type="button" id="' + menuId + '" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
+        if ( typeof(allMenus[k].key) != "undefined" ) {
+            menuHtml += '<span class="sr-only"> (';
+            if ( menu.isCtrl ) {
+                menuHtml += "Ctrl + ";
+            }
+            if ( menu.isAlt ) {
+                menuHtml += "Alt + ";
+            }
+            if ( menu.isShift ) {
+                menuHtml += "Shift + ";
+            }
+            menuHtml += menu.keyName + ')</span>';
+        }
+        menuHtml += '</button>\n';
         menuHtml += '<div class="dropdown-menu" aria-labelledby="' + menuId + '">\n';
 
         var numItems = menuItems.length;
