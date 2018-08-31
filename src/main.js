@@ -55,7 +55,7 @@ function SetEvents() {
         }
     });
     // run from button
-    $(document).on('click', '#edit_menu > div > div > button, #autocomplete_list > button', function() {
+    $(document).on('click', '#edit_menu > div > div > button, #autocomplete_list > .dropdown-item', function() {
         RunEditFromButton(this);
     });
 }
