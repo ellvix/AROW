@@ -15,21 +15,22 @@ function GetFullMenuVar() {
     menuHeading.isAlt = true;
     menuHeading.items = [];
 
-    menuItem = {};
-    menuItem.label = "Heading / Preamble";
-    menuItem.key = 72; 
-    menuItem.keyName = "H";
-    menuItem.isShift = true;
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
-    menuItem.contentPre = "---\n";
-    menuItem.contentPre += "title: \"\"\n";
-    menuItem.contentPre += "author: \"\"\n";
-    menuItem.contentPre += "date: \"\"\n";
-    menuItem.contentPre += "output: html_document\n";
-    menuItem.contentPre += "---\n";
-    menuItem.contentPost = "";
-    menuHeading.items.push(menuItem);
+    // removed, as this is now done as a custom section
+    //menuItem = {};
+    //menuItem.label = "Heading / Preamble";
+    //menuItem.key = 72; 
+    //menuItem.keyName = "H";
+    //menuItem.isShift = true;
+    //menuItem.isCtrl = true;
+    //menuItem.isAlt = false;
+    //menuItem.contentPre = "---\n";
+    //menuItem.contentPre += "title: \"\"\n";
+    //menuItem.contentPre += "author: \"\"\n";
+    //menuItem.contentPre += "date: \"\"\n";
+    //menuItem.contentPre += "output: html_document\n";
+    //menuItem.contentPre += "---\n";
+    //menuItem.contentPost = "";
+    //menuHeading.items.push(menuItem);
 
     menuItem = {};
     menuItem.label = "URL";

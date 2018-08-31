@@ -7,6 +7,7 @@ $(document).ready(function() {
 function Init() {
     // create edit menu based on stuff we have here
     CreateMenu();
+    SetDefaults();
 
 }
 function SetEvents() {
@@ -14,6 +15,17 @@ function SetEvents() {
     // temp / testing
     $(document).on('keydown', 'body', function(e) {
         //console.log(e.keyCode);
+    });
+
+    // custom header triggers
+    $(document).on('click', '#cust_header_trigger', function() {
+        $('#cust_header_wrapper').removeClass('hidden');
+    });
+    $(document).on('click', '.cust_header_del_trigger', function() {
+        $(this).parent().parent().remove();
+    });
+    $(document).on('click', '#cust_header_new_trigger', function() {
+        MakeNewHeaderItem();
     });
 
     $(document).on('click', '#main_submit', function() {
@@ -82,6 +94,11 @@ function SetEvents() {
     });
 }
 
+function SetDefaults() {
+    // date field in custom header area
+    
+}
+
 function RunEditFromKey(e) {
     // look through all current edit options for a key combo match
     var allMenus = GetFullMenuVar();
@@ -148,12 +165,27 @@ function FilterSearch() {
 
 function SubmitData() {
 
+    // init
     $('#output').html('');
     $('#system_message').html('');
 
+    // add header info (if any)
+    var headerHtml = "";
+    if ( ! $('#cust_header_wrapper').hasClass('.hidden') ) {
+        headerHtml += "---\n";
+        $('.cust_header_row').each(function() {
+            if ( $(this).find('.header_key').val().length > 0 ) {
+                headerHtml += $(this).find('.header_key').val() + '\n';
+                headerHtml += '"' + $(this).find('.header_val').val() + '"\n';
+            }
+        });
+        headerHtml += "---\n";
+    }
+
+    // compile data
     var data = {};
     data.rmd_name = $('#rmd_name').val();
-    data.rmd_text = $('#rmd_text').val();
+    data.rmd_text = headerHtml + $('#rmd_text').val();
     data.formats = "";
     $('.format_choice').each(function() {
         if ( $(this).prop('checked') ) {
@@ -162,8 +194,8 @@ function SubmitData() {
         data.formats = data.formats.trim();
     });
 
+    // send
     DisplayMessage("Processing...");
-
     $.ajax({
         url: "worker.php",
         type: "POST", 
@@ -309,6 +341,24 @@ function CreateMenu() {
     var html = menuHtml + searchHtmlFull;
 
     $('#edit_menu').html(html);
+}
+
+function MakeNewHeaderItem() {
+    var newItem = $('#cust_header_template').clone();
+    var thisItemNumber = Number($('.cust_header_row').length);
+    if ( isNaN(thisItemNumber) ) {
+        thisItemNumber = 0;
+    }
+
+    newItem.removeAttr('id');
+    newItem.removeClass('hidden');
+    newItem.addClass('cust_header_row');
+
+    newItem.find('.header_key').attr('id', 'cust_header_key_' + thisItemNumber);
+    newItem.find('.header_val').attr('id', 'cust_header_val_' + thisItemNumber);
+
+    $('#cust_header_template').before(newItem);
+    
 }
 
 function EditText(item) {

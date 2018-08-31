@@ -6,6 +6,7 @@
         <title>RMD Renderer</title>
 
         <link rel="stylesheet" href="src/bootstrap/css/bootstrap.min.css" >
+        <link rel="stylesheet" href="src/open-iconic/font/css/open-iconic-bootstrap.min.css" >
         <link href="src/styles.css" rel="stylesheet"/>
 
         <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
@@ -48,9 +49,42 @@
                 <p>Type some Markdown or RMarkdown in the text box, choose your output filename and the file types.</p>
                 <p>This system requires JavaScript.</p>
                 <div>
-                    <p><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="margin_lr" value="MyFile"></p>
+                    <p class="form-group"><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="form-control" value="MyFile"></p>
+                    <p class="text-center"><button class="btn btn-primary" id="cust_header_trigger">Customize Header</button></p>
 
-                    <div class="dropdown margin_bottom" id="edit_menu">
+                    <div class="form-group hiddenx" id="cust_header_wrapper">
+                        <p>Add any header information you want here. Some defaults are provided to give you the idea</p>
+                        <div class="margin_bottom row cust_header_row">
+                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_0" class="form-control header_key" placeholder="Label" value="title"></div>
+                            <div class="col-md-9"><input type="text" id="cust_header_val_0" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                        </div>
+                        <div class="margin_bottom row cust_header_row">
+                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_1" class="form-control header_key" placeholder="Label" value="author"></div>
+                            <div class="col-md-9"><input type="text" id="cust_header_val_1" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                        </div>
+                        <div class="margin_bottom row cust_header_row">
+                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_2" class="form-control header_key" placeholder="Label" value="date"></div>
+                            <div class="col-md-9"><input type="text" id="cust_header_val_2" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                        </div>
+                        <div class="margin_bottom row cust_header_row">
+                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_3" class="form-control header_key" placeholder="Label" value=""></div>
+                            <div class="col-md-9"><input type="text" id="cust_header_val_3" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                        </div>
+                        <div id="cust_header_template" class="margin_bottom row hidden">
+                            <div class="col-md-2"><input type="text" aria-label="Header Label" class="form-control header_key" placeholder="Label" value=""></div>
+                            <div class="col-md-9"><input type="text" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                        </div>
+                        <div id="cust_header_new_wrapper" class="text-center margin_bottom">
+                            <button class="btn btn-success" id="cust_header_new_trigger">New Header Item<i class="margin_left oi oi-plus" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="dropdown margin_bottom text-center" id="edit_menu">
                         <button class="btn btn-default dropdown-toggle" type="button" id="insert_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Label <i class="caret"></i></button>
                         <div class="dropdown-menu" aria-labelledby="insert_label">
                             <button class="invis_button dropdown-item" id="edit_trigger_replace">Not available</button>
