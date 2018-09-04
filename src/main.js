@@ -175,9 +175,11 @@ function SubmitData() {
     if ( ! $('#cust_header_wrapper').hasClass('.hidden') ) {
         headerHtml += "---\n";
         $('.cust_header_row').each(function() {
-            if ( $(this).find('.header_key').val().length > 0 ) {
-                headerHtml += $(this).find('.header_key').val() + '\n';
-                headerHtml += '"' + $(this).find('.header_val').val() + '"\n';
+            var thisKey = $(this).find('.header_key').val();
+            var thisVal = $(this).find('.header_val').val();
+            
+            if ( thisKey.length > 0 && thisVal.length > 0 ) {
+                headerHtml += thisKey + ': "' + thisVal + '"\n';
             }
         });
         headerHtml += "---\n";
