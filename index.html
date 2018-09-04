@@ -3,6 +3,10 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
+
         <title>RMD Renderer</title>
 
         <link rel="stylesheet" href="src/bootstrap/css/bootstrap.min.css" >
@@ -52,7 +56,7 @@
                     <p class="form-group"><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="form-control" value="MyFile"></p>
                     <p class="text-center"><button class="btn btn-primary" id="cust_header_trigger">Customize Header</button></p>
 
-                    <div class="form-group hiddenx" id="cust_header_wrapper">
+                    <div class="form-group hidden" id="cust_header_wrapper">
                         <p>Add any header information you want here. Some defaults are provided to give you the idea</p>
                         <div class="margin_bottom row cust_header_row">
                             <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_0" class="form-control header_key" placeholder="Label" value="title"></div>

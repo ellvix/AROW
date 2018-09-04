@@ -34,8 +34,8 @@ function SetEvents() {
 
     // go to search box: alt + /
     $(document).on('keydown', 'body', function(e) {
-        if ( e.keyCode == 191 && e.altKey ) {
-            $('#menu_search_ddl').dropdown('toggle');
+        if ( ( e.keyCode == 191 && e.altKey ) ) {
+            $('#menu_search').dropdown('toggle');
         }
     });
     $(document).on('shown.bs.dropdown', '#menu_search_wrapper', function() {
@@ -88,8 +88,9 @@ function SetEvents() {
             RunEditFromKey(e);
         }
     });
+
     // run from button
-    $(document).on('click', '#edit_menu > div > div > button, #autocomplete_list > .dropdown-item', function() {
+    $(document).on('click', '#edit_menu > div > div > button, #menu_search_ddl > #autocomplete_list > .dropdown-item', function(e) {
         RunEditFromButton(this);
     });
 }
