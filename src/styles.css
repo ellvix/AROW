@@ -292,6 +292,7 @@ input[type="radio"] {
 .invis_button {
     background-color: transparent;
     border: none !important;
+    cursor: pointer;
 }
 
 .char_img {
@@ -362,4 +363,35 @@ input[type="radio"] {
 }
 #autocomplete_list > div {
     padding: .2em 1em;
+}
+
+#bibtex_modal > .modal-dialog {
+    max-width: 800px;
+}
+
+#bib_list {
+    list-style: none;
+}
+#bib_list > li {
+    width: 100%;
+}
+#bib_list > li:nth-child(odd) {
+    background-color: #e2e3e5;
+    border-color: #d6d8db;
+}
+
+#citation_list > li {
+    padding: 0;
+}
+#citation_list > li > button {
+    padding: .75rem 1.25rem;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+#citation_list > li > button:hover, #citation_list > li > button:focus {
+    color: #383d41;
+    background-color: #d6d8db;
 }

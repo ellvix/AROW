@@ -2,24 +2,47 @@
 $(document).ready(function() {
     Init();
     SetEvents();
+    TestingShit();
 });
+
+// global vars AHAHAHAHAHA TRY AND STOP ME
+var bibs = {};
 
 function Init() {
     // create edit menu based on stuff we have here
     CreateMenu();
     SetDefaults();
 
+    // bibtex setup
+    bibs = [];
+}
+function TestingShit() {
+
+    // bibtext modal work
+    //$('#bibtex_modal').modal('show');
+
+    // temp bibtex in var
+    var txt = "@article{lee1971interpretation, title={The interpretation of protein structures: estimation of static accessibility}, author={Lee, Byungkook and Richards, Frederic M}, journal={Journal of molecular biology}, volume={55}, number={3}, pages={379--IN4}, year={1971}, publisher={Elsevier} } @article{hansen1959accessibility, title={How accessibility shapes land use}, author={Hansen, Walter G}, journal={Journal of the American Institute of planners}, volume={25}, number={2}, pages={73--76}, year={1959}, publisher={Taylor \& Francis} } @article{tory1977category, title={Category accessibility and impression formation}, author={Tory Higgins, E and Rholes, WS and Jones, CR}, journal={J Exp Soc Psychol}, volume={13}, pages={141--154}, year={1977} }";
+    var b = new BibtexParser();
+    b.setInput(txt);
+    b.bibtex();
+    var thisBib = {};
+    thisBib.fileName = "daveOfDevon.txt";
+    thisBib.data = b.getEntries();
+    bibs.push(thisBib);
+
+    // insert bibtex work
 }
 function SetEvents() {
-
-    // temp / testing
-    $(document).on('keydown', 'body', function(e) {
-        //console.log(e.keyCode);
-    });
-
     // custom header triggers
-    $(document).on('click', '#cust_header_trigger', function() {
-        $('#cust_header_wrapper').removeClass('hidden');
+    $(document).on('click', '#advanced_options_trigger', function() {
+        if ( $(this).html() == "Show Advanced Options" ) {
+            $(this).html('Hide Advanced Options');
+            $('#advanced_options_wrapper').removeClass('hidden');
+        } else {
+            $(this).html('Show Advanced Options');
+            $('#advanced_options_wrapper').addClass('hidden');
+        }
     });
     $(document).on('click', '.cust_header_del_trigger', function() {
         $(this).parent().parent().remove();
@@ -84,9 +107,20 @@ function SetEvents() {
     $(document).on('keydown', '#rmd_text', function(e) {
         // all edit events MUST start with ctrl or alt, so, 
         // exceptions first
-        if ( e.ctrlKey || e.altKey ) {
+        if ( e.shiftKey && e.ctrlKey && ! e.altKey && e.keyCode == 70 ) {
+            InitReferenceInsert();
+        }
+        else if ( e.ctrlKey || e.altKey ) {
             RunEditFromKey(e);
         }
+    });
+
+    // bibtex events
+    $(document).on('change', '#bibtex_upload_file', function() {
+        FileUploadHandler();
+    });
+    $(document).on('click', '.bib_delete', function() {
+        BibtexRemoveFile(this);
     });
 
     // run from button
@@ -172,7 +206,7 @@ function SubmitData() {
 
     // add header info (if any)
     var headerHtml = "";
-    if ( ! $('#cust_header_wrapper').hasClass('.hidden') ) {
+    if ( ! $('#advanced_options_wrapper').hasClass('.hidden') ) {
         headerHtml += "---\n";
         $('.cust_header_row').each(function() {
             var thisKey = $(this).find('.header_key').val();
@@ -277,8 +311,8 @@ function CreateMenu() {
     var searchHtml = "";
     var allMenus = GetFullMenuVar();
 
-    searchHtmlFull += '<div class="inline" id="menu_search_wrapper">\n';
-    searchHtmlFull += '<button class="btn btn-default dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
+    searchHtmlFull += '<div class="inline btn-group" role="group" id="menu_search_wrapper">\n';
+    searchHtmlFull += '<button class="btn btn-secondary dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
     searchHtmlFull += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl">\n';
     searchHtmlFull += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list" aria-haspopup="false" aria-expanded="false">\n';
     searchHtml += '<div role="listbox" id="autocomplete_list" aria-expanded="true">\n';
@@ -289,8 +323,8 @@ function CreateMenu() {
         var menuId = "menu_" + k;
         var menuItems = menu.items;
 
-        menuHtml += '<div class="inline">\n';
-        menuHtml += '<button class="btn btn-default dropdown-toggle" type="button" id="' + menuId + '" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
+        menuHtml += '<div class="inline btn-group" role="group">\n';
+        menuHtml += '<button class="btn btn-secondary dropdown-toggle" type="button" id="' + menuId + '" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
         if ( typeof(allMenus[k].key) != "undefined" ) {
             menuHtml += '<span class="sr-only"> (';
             if ( menu.isCtrl ) {
@@ -364,6 +398,75 @@ function MakeNewHeaderItem() {
     
 }
 
+function FileUploadHandler() {
+    // on file input change, we add this file to the 'stack' (by which we mean storing its text internally), and update the interface to show the file was loaded (and can be deleted
+
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+        // todo: display 'just use the textarea' message
+        return;
+    }   
+
+    input = document.getElementById('bibtex_upload_file');
+    if (!input) {
+        //alert("Um, couldn't find the fileinput element.");
+    }
+    else if (!input.files) {
+        //alert("This browser doesn't seem to support the `files` property of file inputs.");
+    }
+    else if (!input.files[0]) {
+        // todo: display 'chooose a file first' error
+    }
+    else {
+        file = input.files[0];
+        fr = new FileReader();
+        fr.onload = function() {
+            DisplayMessage('live', 'file loaded');
+            var txt = fr.result;
+
+            // parse and save BibTex
+            var b = new BibtexParser();
+            b.setInput(txt);
+            b.bibtex();
+            var thisBib = {};
+            thisBib.fileName = $('#bibtex_upload_file').val().split('\\').pop();
+            thisBib.data = b.getEntries();
+            bibs.push(thisBib);
+
+            // update UI to show this one
+            var bibHtml = $('#bib_list_template').clone();
+            bibHtml.find('.bib_filename').html(thisBib.fileName);
+            bibHtml.find('.bib_file_length').html(Object.keys(thisBib.data).length + " articles");
+            bibHtml.removeAttr('id');
+            bibHtml.removeClass('hidden');
+            $('#bib_list_template').before(bibHtml);
+
+            $('#bibtex_upload_file').val('');
+        };
+
+        fr.readAsText(file);
+        //fr.readAsDataURL(file);
+    }
+}
+
+function BibtexRemoveFile(sender) {
+    // remove data, and remove this li
+
+    var fileName = $(sender).find('.bib_filename').html();
+    var numItems = bibs.length;
+    for ( var i = 0 ; i < numItems ; i++ ) {
+        if ( bibs[i].fileName == fileName ) {
+            bibs.splice(i, 1);
+            break;
+        }
+    }
+
+    $(sender).parent().remove(); 
+}
+
+function InitReferenceInsert() {
+
+}
+
 function EditText(item) {
     // idea: we want to insert pre / post text from the item around our current selection 
 
@@ -393,9 +496,13 @@ function InsertInTextareaAtCursor(myField, myValue) {
             + myField.value.substring(endPos, myField.value.length);
         myField.selectionStart = startPos + myValue.length;
         myField.selectionEnd = startPos + myValue.length;
-    } else {
+    } 
+    // otherwise, just append it
+    else {
         myField.value += myValue;
     }
+
+    $(myField).focus();
 }
 
 function DisplayMessage(msg, where) {
@@ -413,8 +520,3 @@ function DisplayMessage(msg, where) {
     $('#' + where).html(msg);
 }
 
-// todo: 
-// add key combo to button
-
-// wishlist:
-// key binding thing

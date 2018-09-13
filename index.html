@@ -16,6 +16,7 @@
         <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
         <script src="src/bootstrap/js/popper.min.js"></script>
         <script src="src/bootstrap/js/bootstrap.min.js"></script>
+        <script src="src/bibtex_js.js"></script>
         <script src="src/classes.js"></script>
         <script src="src/main.js"></script>
 
@@ -54,45 +55,51 @@
                 <p>This system requires JavaScript.</p>
                 <div>
                     <p class="form-group"><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="form-control" value="MyFile"></p>
-                    <p class="text-center"><button class="btn btn-primary" id="cust_header_trigger">Customize Header</button></p>
+                    <p class="text-center"><button class="btn btn-primary" id="advanced_options_trigger">Show Advanced Options</button></p>
 
-                    <div class="form-group hidden" id="cust_header_wrapper">
-                        <p>Add any header information you want here. Some defaults are provided to give you the idea</p>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_0" class="form-control header_key" placeholder="Label" value="title"></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_0" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                    <div class="form-group hidden" id="advanced_options_wrapper">
+                        <div>
+                            <h3>Custom Header</h3>
+                            <p>Add any header information you want here. Some defaults are provided to give you the idea</p>
+                            <div class="margin_bottom row cust_header_row">
+                                <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_0" class="form-control header_key" placeholder="Label" value="title"></div>
+                                <div class="col-md-9"><input type="text" id="cust_header_val_0" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                                <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                            </div>
+                            <div class="margin_bottom row cust_header_row">
+                                <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_1" class="form-control header_key" placeholder="Label" value="author"></div>
+                                <div class="col-md-9"><input type="text" id="cust_header_val_1" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                                <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                            </div>
+                            <div class="margin_bottom row cust_header_row">
+                                <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_2" class="form-control header_key" placeholder="Label" value="date"></div>
+                                <div class="col-md-9"><input type="text" id="cust_header_val_2" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                                <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                            </div>
+                            <div class="margin_bottom row cust_header_row">
+                                <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_3" class="form-control header_key" placeholder="Label" value=""></div>
+                                <div class="col-md-9"><input type="text" id="cust_header_val_3" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                                <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                            </div>
+                            <div id="cust_header_template" class="margin_bottom row hidden">
+                                <div class="col-md-2"><input type="text" aria-label="Header Label" class="form-control header_key" placeholder="Label" value=""></div>
+                                <div class="col-md-9"><input type="text" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
+                                <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                            </div>
+                            <div id="cust_header_new_wrapper" class="text-center margin_bottom">
+                                <button class="btn btn-success" id="cust_header_new_trigger">New Header Item<i class="margin_left oi oi-plus" aria-hidden="true"></i></button>
+                            </div>
                         </div>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_1" class="form-control header_key" placeholder="Label" value="author"></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_1" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
+                        <div>
+                            <h3>BibTex citiations</h3>
+                            <p>Add a set of BibTex citations to be able to be used in the main text area below.</p>
+                            <p><button type="button" class="btn btn-primary" id="bibtex_popup_trigger" data-toggle="modal" data-target="#bibtex_modal">Update BibTex</button></p>
                         </div>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_2" class="form-control header_key" placeholder="Label" value="date"></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_2" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_3" class="form-control header_key" placeholder="Label" value=""></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_3" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div id="cust_header_template" class="margin_bottom row hidden">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" class="form-control header_key" placeholder="Label" value=""></div>
-                            <div class="col-md-9"><input type="text" class="margin_lr form-control header_val" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-default cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div id="cust_header_new_wrapper" class="text-center margin_bottom">
-                            <button class="btn btn-success" id="cust_header_new_trigger">New Header Item<i class="margin_left oi oi-plus" aria-hidden="true"></i></button>
-                        </div>
+                    </div> <!-- end advanced options //-->
+
+                    <div class="text-center">
+                    <div class="btn-group margin_bottom" id="edit_menu" role="group" aria-label="insert and edit options">
                     </div>
-
-                    <div class="dropdown margin_bottom text-center" id="edit_menu">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="insert_label" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Label <i class="caret"></i></button>
-                        <div class="dropdown-menu" aria-labelledby="insert_label">
-                            <button class="invis_button dropdown-item" id="edit_trigger_replace">Not available</button>
-                        </div>
                     </div>
 
                     <p><label for="rmd_text">Main file contents</label></p>
@@ -133,6 +140,81 @@ Sys.time()
 
         </div>
         </main>
+        <div class="modal fade" id="bibtex_modal" tabindex="-1" role="dialog" aria-labelledby="bibtex_modal_title" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bibtex_modal_title">Update Bibtex</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="alert alert-secondary" role="alert"><button role="button" data-toggle="collapse" data-target="#bibtex_explanation" aria-expanded="false" aria-controls="bibtex_explanation" title="What is BibTex and how would it be used?" class="invis_button">What is BibTex and how would it be used?</button></p>
+                        <div class="collapse" id="bibtex_explanation">
+                            <div class="jumbotron">
+                                <p><a href="http://www.bibtex.org/" target="_blank">BibTex</a> is tool for managing references. Raw BibTex is text that contains information about one or more specific references, and is used here to more easily cite references in the main text area.</p>
+                                <p>The way this works is to first add or update the text to be used (or by uploading a file) by using the interface on this dialog window. From there, the system will remember the set of references and they will be available for use. When typing in the main text area (the area labeled as Main file contents), you can hit Alt + Shift + R or use the menu above to add a reference. This will bring up an interface to choose the reference wanted from the available list, and insert it. </p>
+                                <p>After inserting a reference, the text will look something like this:</p>
+                                <div class="card card-body">
+                                    <p>Some text some text some text [@reference]</p>
+                                </div>
+                                <p>This will come out in the final rendered documents depending on the format, but will look something like:</p>
+                                <div class="card card-body">
+                                    <p>Some text some text some text (Referenced Author, 211-215)</p>
+                                </div>
+                                <p>Note that square brackets should be used here to properly create the citation.</p>
+                            </div>
+                        </div> <!-- end explanation //-->
+                        <div>
+                            <div class="form-group">
+                                <label for="bibtex_upload_file">Upload a BibTex file (.bib, .bst, .aux, or .txt)</label>
+                                <input type="file" class="form-control-file" id="bibtex_upload_file">
+                            </div>
+                            <div>
+                                <ul id="bib_list" class="list-group margin_bottom">
+                                    <li id="bib_list_template" class="hidden list-group-item"><span class="bib_filename">myfile.txt</span> <span class="bib_file_length badge badge-primary"></span><button class="btn btn-sm btn-secondary bib_delete margin_lr float-right" role="button"><i class="oi oi-trash" aria-hidden="true" title="Delete this file"></i><span class="sr-only"> Delete this file</span></button></li>
+                                </ul>
+                            </div>
+                            <div class="form-group">
+                                <label for="bibtex_textarea">Add BibTex manually</label>
+                                <textarea class="form-control" id="bibtex_textarea"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end bibtex_modal //-->
+        <div class="modal fade" id="citation_modal" tabindex="-1" role="dialog" aria-labelledby="citation_modal_title" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="citation_modal_title">Insert Citation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" aria-label="Filter reference list" placeholder="Filter" id="citation_filter">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="citation_clear_filter" title="Clear Filter"><i class="oi oi-x" aria-hidden="true"></i><span class="sr-only"> Clear Filter</span></button>
+                            </div>
+                        </div>
+                        <div>
+                            <ul class="list-group" id="citation_list">
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end citation_modal //-->
     </body>
 </html>
 
