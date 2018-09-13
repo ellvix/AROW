@@ -6,7 +6,7 @@ $(document).ready(function() {
 });
 
 // global vars AHAHAHAHAHA TRY AND STOP ME
-var bibs = {};
+var bibFiles = {};
 
 function Init() {
     // create edit menu based on stuff we have here
@@ -14,7 +14,7 @@ function Init() {
     SetDefaults();
 
     // bibtex setup
-    bibs = [];
+    bibFiles = [];
 }
 function TestingShit() {
 
@@ -29,9 +29,10 @@ function TestingShit() {
     var thisBib = {};
     thisBib.fileName = "daveOfDevon.txt";
     thisBib.data = b.getEntries();
-    bibs.push(thisBib);
+    bibFiles.push(thisBib);
 
     // insert bibtex work
+    InitReferenceInsert();
 }
 function SetEvents() {
     // custom header triggers
@@ -122,6 +123,18 @@ function SetEvents() {
     $(document).on('click', '.bib_delete', function() {
         BibtexRemoveFile(this);
     });
+    $(document).on('keydown', '#citation_filter', function() {
+        FilterCitations();
+    });
+    $(document).on('click', '#citation_clear_filter', function() {
+        $('#citation_filter').val('');
+        FilterCitations();
+        $('#citation_filter').focus();
+    });
+    $(document).on('click', '.citation_insert_button', function() {
+        InsertInTextareaAtCursor($('#rmd_text')[0], '@' + $(this).attr('data-article'));
+        $('#citation_modal').modal('hide');
+    });
 
     // run from button
     $(document).on('click', '#edit_menu > div > div > button, #menu_search_ddl > #autocomplete_list > .dropdown-item', function(e) {
@@ -166,16 +179,16 @@ function RunEditFromButton(sender) {
 }
 
 function FilterSearch() {
-    var filter = $('#search_shortcuts_input').val().toLowerCase();
+    var filterText = $('#search_shortcuts_input').val().toLowerCase();
 
     // we duplicate the potential list, filter it, and add it
     var list = $('#search_storage > div').clone();
 
     list.find('button.dropdown-item').each(function() {
         var thisText = $(this).html().toLowerCase();
-        var show = thisText.indexOf(filter) != -1 ;
+        var show = thisText.indexOf(filterText) != -1 ;
 
-        if (show && filter.length > 0) {
+        if (show && filterText.length > 0) {
         } else {
             $(this).remove();
         }
@@ -430,7 +443,7 @@ function FileUploadHandler() {
             var thisBib = {};
             thisBib.fileName = $('#bibtex_upload_file').val().split('\\').pop();
             thisBib.data = b.getEntries();
-            bibs.push(thisBib);
+            bibFiles.push(thisBib);
 
             // update UI to show this one
             var bibHtml = $('#bib_list_template').clone();
@@ -452,10 +465,10 @@ function BibtexRemoveFile(sender) {
     // remove data, and remove this li
 
     var fileName = $(sender).find('.bib_filename').html();
-    var numItems = bibs.length;
+    var numItems = bibFiles.length;
     for ( var i = 0 ; i < numItems ; i++ ) {
-        if ( bibs[i].fileName == fileName ) {
-            bibs.splice(i, 1);
+        if ( bibFiles[i].fileName == fileName ) {
+            bibFiles.splice(i, 1);
             break;
         }
     }
@@ -464,7 +477,68 @@ function BibtexRemoveFile(sender) {
 }
 
 function InitReferenceInsert() {
+    // add all items to list to be filtered
 
+    // first we'll add them to an array to sort
+    var bibArr = [];
+    var sortArr = [];
+    var numFiles = bibFiles.length;
+    for ( var i = 0 ; i < numFiles ; i++ ) {
+        for ( var key in bibFiles[i].data ) {
+            var thisBib = bibFiles[i].data[key];
+            if ( ! bibArr.hasOwnProperty(key) ) { // avoid duplicates
+                bibArr.push(thisBib); 
+                sortArr.push(thisBib.TITLE); // we'll sort by title
+                console.log(thisBib);
+            }
+        }
+    }
+    // todo: add stuff from textarea
+
+    // sort
+    var data = [];
+    for (var i = 0 ; i < sortArr.length ; i++) {
+        data.push([sortArr[i], bibArr[i]]);
+    }
+    data.sort(function (a, b) {
+        if (a[0] === b[0]) {
+            return 0;
+        }
+        else {
+            return (a[0] < b[0]) ? -1 : 1;
+        }
+    });
+
+    // add to list
+    var numItems = data.length;
+    for ( var i = 0 ; i < numItems ; i++ ) {
+        var html = '';
+        html += '<li class="list-group-item">\n';
+        html += '<button class="invis_button citation_insert_button" data-article="' + data[i][1].BIBTEXKEY + '" role="button" title="' + data[i][1].TITLE + '">';
+        html += data[i][1].TITLE;
+        html += '</button>\n';
+        html += '</li>\n';
+
+        $('#citation_list').append(html);
+    }
+
+
+    $('#citation_modal').modal('show');
+}
+
+function FilterCitations() {
+    var filterText = $('#citation_filter').val().toLowerCase();
+    console.log('asfasdf');
+
+    $('#citation_list > li').each(function() {
+        var thisText = $(this).find('button').html().toLowerCase();
+
+        if ( filterText.length == 0 || thisText.indexOf(filterText) != -1 ) {
+            $(this).removeClass('hidden');
+        } else {
+            $(this).addClass('hidden');
+        }
+    });
 }
 
 function EditText(item) {
