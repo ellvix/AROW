@@ -1,4 +1,12 @@
 
+/*
+ *
+ * Scripts for the RMarkdown renderer webpage
+ * Created Summer 2018 Sean McCurry
+ *
+ */
+
+
 $(document).ready(function() {
     Init();
     SetEvents();
@@ -20,19 +28,6 @@ function TestingShit() {
 
     // bibtext modal work
     //$('#bibtex_modal').modal('show');
-
-    // temp bibtex in var
-    var txt = "@article{lee1971interpretation, title={The interpretation of protein structures: estimation of static accessibility}, author={Lee, Byungkook and Richards, Frederic M}, journal={Journal of molecular biology}, volume={55}, number={3}, pages={379--IN4}, year={1971}, publisher={Elsevier} } @article{hansen1959accessibility, title={How accessibility shapes land use}, author={Hansen, Walter G}, journal={Journal of the American Institute of planners}, volume={25}, number={2}, pages={73--76}, year={1959}, publisher={Taylor \& Francis} } @article{tory1977category, title={Category accessibility and impression formation}, author={Tory Higgins, E and Rholes, WS and Jones, CR}, journal={J Exp Soc Psychol}, volume={13}, pages={141--154}, year={1977} }";
-    var b = new BibtexParser();
-    b.setInput(txt);
-    b.bibtex();
-    var thisBib = {};
-    thisBib.fileName = "daveOfDevon.txt";
-    thisBib.data = b.getEntries();
-    bibFiles.push(thisBib);
-
-    // insert bibtex work
-    InitReferenceInsert();
 }
 function SetEvents() {
     // custom header triggers
@@ -120,6 +115,9 @@ function SetEvents() {
     $(document).on('change', '#bibtex_upload_file', function() {
         FileUploadHandler();
     });
+    $(document).on('hide.bs.modal', '#bibtex_modal', function() {
+        MaybeCreateFileFromTextarea();
+    });
     $(document).on('click', '.bib_delete', function() {
         BibtexRemoveFile(this);
     });
@@ -138,12 +136,18 @@ function SetEvents() {
 
     // run from button
     $(document).on('click', '#edit_menu > div > div > button, #menu_search_ddl > #autocomplete_list > .dropdown-item', function(e) {
-        RunEditFromButton(this);
+        // exceptions first
+        if ( $(this).html().indexOf("Reference") != -1 ) {
+            InitReferenceInsert();
+        } else {
+            RunEditFromButton(this);
+        }
     });
 }
 
 function SetDefaults() {
     // date field in custom header area
+    // todo
     
 }
 
@@ -219,8 +223,8 @@ function SubmitData() {
 
     // add header info (if any)
     var headerHtml = "";
+    headerHtml += "---\n";
     if ( ! $('#advanced_options_wrapper').hasClass('.hidden') ) {
-        headerHtml += "---\n";
         $('.cust_header_row').each(function() {
             var thisKey = $(this).find('.header_key').val();
             var thisVal = $(this).find('.header_val').val();
@@ -229,8 +233,18 @@ function SubmitData() {
                 headerHtml += thisKey + ': "' + thisVal + '"\n';
             }
         });
-        headerHtml += "---\n";
     }
+
+    // add bibtex info (if any)
+    if ( bibFiles.length > 0 ) {
+        headerHtml += "bibliography: \n";
+        for ( var i = 0 ; i < bibFiles.length ; i++ ) {
+            headerHtml += "- " + bibFiles[i].fileName + "\n";
+        }
+    }
+
+    headerHtml += "---\n";
+    // end header info
 
     // compile data
     var data = {};
@@ -243,6 +257,8 @@ function SubmitData() {
         }
         data.formats = data.formats.trim();
     });
+
+    console.log(data.rmd_text);
 
     // send
     DisplayMessage("Processing...");
@@ -412,28 +428,102 @@ function MakeNewHeaderItem() {
 }
 
 function FileUploadHandler() {
+    input = document.getElementById('bibtex_upload_file');
+
+    var file = $('#bibtex_upload_file').prop('files')[0];
+    var data = new FormData();
+    data.append('file', file);
+    $.ajax({
+        url: 'bibtexhandler.php', 
+        dataType: 'text', 
+        cache: false, 
+        contentType: false,
+        processData: false, 
+        data: data, 
+        type: 'post', 
+        success: function(r) {
+            console.log(r);
+            var response = JSON.parse(r);
+            FileUploadFinisher(response);
+        }
+    });
+}
+function MaybeCreateFileFromTextarea() {
+    // when we close the bibtex modal, if there's content in the textarea, save it
+
+    var data = {};
+    data.textarea = $('#bibtex_textarea').val().trim();
+    data.fileName = "manual.bib";
+
+    if ( data.textarea.length > 0 ) {
+        var thisBib = {};
+
+        console.log('sending jsondata');
+        console.log(data);
+
+        $.ajax({
+            url: "bibtexhandler.php",
+            data: data, 
+            dataType: 'json',
+            type: 'post', 
+            success: function(r) {
+                console.log(r);
+                FileUploadFinisher(r);
+            }
+        });
+    }
+
+}
+
+function FileUploadFinisher(response) {
     // on file input change, we add this file to the 'stack' (by which we mean storing its text internally), and update the interface to show the file was loaded (and can be deleted
 
+    if ( typeof(response.error) != 'undefined' ) {
+        if ( response.error.length > 0 ) {
+            DisplayMessage(response.error, 'error');
+            return;
+        }
+    } else {
+        DisplayMessage('There was an issue saving the file', 'error');
+        return;
+    }
+
+
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-        // todo: display 'just use the textarea' message
+        console.log("Your browser lacks the capability to save and convert this file");
         return;
     }   
 
     input = document.getElementById('bibtex_upload_file');
     if (!input) {
-        //alert("Um, couldn't find the fileinput element.");
+        console.log("Um, couldn't find the fileinput element.");
     }
     else if (!input.files) {
-        //alert("This browser doesn't seem to support the `files` property of file inputs.");
+        console.log("This browser doesn't seem to support the `files` property of file inputs.");
     }
     else if (!input.files[0]) {
-        // todo: display 'chooose a file first' error
+        if ( response.uploadType == "textarea" ) {
+            var thisBib = {};
+            bibFiles.push(thisBib);
+
+            // parse and save BibTex
+            var b = new BibtexParser();
+            b.setInput($('#bibtex_textarea').val());
+            b.bibtex();
+            var thisBib = {};
+            thisBib.fileName = response.filePath;
+            thisBib.data = b.getEntries();
+
+            bibFiles.push(thisBib);
+        } else {
+            DisplayMessage("Try another file", "error");
+        }
     }
     else {
         file = input.files[0];
         fr = new FileReader();
         fr.onload = function() {
-            DisplayMessage('live', 'file loaded');
+            DisplayMessage('file loaded', 'live');
             var txt = fr.result;
 
             // parse and save BibTex
@@ -441,13 +531,15 @@ function FileUploadHandler() {
             b.setInput(txt);
             b.bibtex();
             var thisBib = {};
-            thisBib.fileName = $('#bibtex_upload_file').val().split('\\').pop();
+            thisBib.fileName = response.filePath;
             thisBib.data = b.getEntries();
             bibFiles.push(thisBib);
 
+            var justTheFileName = thisBib.fileName.split('/').pop();
+
             // update UI to show this one
             var bibHtml = $('#bib_list_template').clone();
-            bibHtml.find('.bib_filename').html(thisBib.fileName);
+            bibHtml.find('.bib_filename').html(justTheFileName);
             bibHtml.find('.bib_file_length').html(Object.keys(thisBib.data).length + " articles");
             bibHtml.removeAttr('id');
             bibHtml.removeClass('hidden');
@@ -457,7 +549,7 @@ function FileUploadHandler() {
         };
 
         fr.readAsText(file);
-        //fr.readAsDataURL(file);
+        //fr.readAsDataURL(file); // doesn't work
     }
 }
 
@@ -467,7 +559,7 @@ function BibtexRemoveFile(sender) {
     var fileName = $(sender).find('.bib_filename').html();
     var numItems = bibFiles.length;
     for ( var i = 0 ; i < numItems ; i++ ) {
-        if ( bibFiles[i].fileName == fileName ) {
+        if ( bibFiles[i].fileName.indexOf(fileName) > -1 ) {
             bibFiles.splice(i, 1);
             break;
         }
@@ -489,11 +581,9 @@ function InitReferenceInsert() {
             if ( ! bibArr.hasOwnProperty(key) ) { // avoid duplicates
                 bibArr.push(thisBib); 
                 sortArr.push(thisBib.TITLE); // we'll sort by title
-                console.log(thisBib);
             }
         }
     }
-    // todo: add stuff from textarea
 
     // sort
     var data = [];
@@ -510,6 +600,7 @@ function InitReferenceInsert() {
     });
 
     // add to list
+    $('#citation_list').html('');
     var numItems = data.length;
     for ( var i = 0 ; i < numItems ; i++ ) {
         var html = '';
@@ -528,7 +619,6 @@ function InitReferenceInsert() {
 
 function FilterCitations() {
     var filterText = $('#citation_filter').val().toLowerCase();
-    console.log('asfasdf');
 
     $('#citation_list > li').each(function() {
         var thisText = $(this).find('button').html().toLowerCase();
@@ -586,6 +676,11 @@ function DisplayMessage(msg, where) {
 
     if ( where == "system_message" ) {
         msg = "<hr>\n<h3>System log: </h3>\n" + msg;
+    }
+
+    if ( where == "error" ) {
+        $('#error_modal .modal-body').html(msg);
+        $('#error_modal').modal('show');
     }
 
     msg = msg.replace(/\n/g, "<br>");

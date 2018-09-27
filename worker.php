@@ -22,13 +22,16 @@ if ( $testingLevel > 1 ) {
 }
 
 // connections
-// bookmark: sql isn't connecting to the AWS RDB, even though phpMyAdmin is fine
 $sqlIsWorking = false;
 try {
     include("../inc/dbinfo.inc");
     $pdo = new PDO("mysql:host=" . DB_SERVER . ";port=3306;dbname=" . DB_DATABASE, DB_USERNAME, DB_PASSWORD, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 
     $sqlIsWorking = true;
+
+    if ( DB_SERVER == "localhost" ) {
+        $platform = "localhost";
+    }
 } catch (Exception $e) {
     $sysMsg .= "<p>sql err: " . $e->getMessage() . "</p>\n";
 }

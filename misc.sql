@@ -13,12 +13,12 @@ CREATE TABLE `rmd` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 
-// save / update proc: StoreNew RMD
-// params:
+
+// StoreNewRMD proc
 // IN name varchar(255)
-// IN text text
+// IN text TEXT
 // IN formats varchar(255)
-// IN ip_addresss varchar(255)
+// IN ip_address varchar(255)
 // OUT id int
 BEGIN
     DECLARE id int DEFAULT 1;
@@ -35,3 +35,23 @@ BEGIN
 
     SELECT id;
     END
+
+// StoreNewIPOnly proc
+// IN ip_address varchar(255)
+// OUT id int
+BEGIN
+    DECLARE id int DEFAULT 1;
+    DECLARE num int DEFAULT 0;
+    set num = (SELECT count(*) FROM `rmd` WHERE `ip_address` = ip_address);
+
+    if ( num > 0 ) THEN
+        set id = (SELECT `id` FROM `rmd` WHERE `ip_address` = ip_address);
+        UPDATE `rmd` SET `updated_on`=NOW() WHERE `ip_address` = ip_address;
+    ELSE
+        INSERT INTO `rmd` (`ip_address`, `updated_on`) VALUES (ip_address, NOW());
+        SELECT LAST_INSERT_ID() INTO id;
+    END IF;
+
+    SELECT id;
+    END
+
