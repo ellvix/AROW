@@ -28,6 +28,21 @@ function TestingShit() {
 
     // bibtext modal work
     //$('#bibtex_modal').modal('show');
+
+    /*
+    // temp bibtex in var
+    var txt = "@article{lee1971interpretation, title={The interpretation of protein structures: estimation of static accessibility}, author={Lee, Byungkook and Richards, Frederic M}, journal={Journal of molecular biology}, volume={55}, number={3}, pages={379--IN4}, year={1971}, publisher={Elsevier} } @article{hansen1959accessibility, title={How accessibility shapes land use}, author={Hansen, Walter G}, journal={Journal of the American Institute of planners}, volume={25}, number={2}, pages={73--76}, year={1959}, publisher={Taylor \& Francis} } @article{tory1977category, title={Category accessibility and impression formation}, author={Tory Higgins, E and Rholes, WS and Jones, CR}, journal={J Exp Soc Psychol}, volume={13}, pages={141--154}, year={1977} }";
+    var b = new BibtexParser();
+    b.setInput(txt);
+    b.bibtex();
+    var thisBib = {};
+    thisBib.fileName = "daveOfDevon.txt";
+    thisBib.data = b.getEntries();
+    bibFiles.push(thisBib);
+    */
+
+    // insert bibtex work
+    //InitReferenceInsert();
 }
 function SetEvents() {
     // custom header triggers
@@ -82,6 +97,22 @@ function SetEvents() {
 
     });
 
+    // arrow up and down to citation box
+    $(document).on('keyup', '#citation_filter, .citation_insert_button', function(e) {
+        if ( e.keyCode == 40 || e.keyCode == 38 ) {
+            var currentSet = $('#citation_filter, .citation_insert_button');
+            var currentIndex = currentSet.index(this);
+            var key = e.keyCode;
+
+            if ( e.keyCode == 40 && currentIndex < currentSet.length ) {
+                $(currentSet[currentIndex+1]).focus();
+            } else if ( e.keyCode == 38 && currentIndex > 0 ) {
+                $(currentSet[currentIndex-1]).focus();
+            }
+        }
+
+    });
+
     // go to edit menu
     $(document).on('keyup', 'body', function(e) {
         // triggers for menu all start with alt ctrl, so 
@@ -103,7 +134,7 @@ function SetEvents() {
     $(document).on('keydown', '#rmd_text', function(e) {
         // all edit events MUST start with ctrl or alt, so, 
         // exceptions first
-        if ( e.shiftKey && e.ctrlKey && ! e.altKey && e.keyCode == 70 ) {
+        if ( e.shiftKey && e.ctrlKey && ! e.altKey && e.keyCode == 67 ) {
             InitReferenceInsert();
         }
         else if ( e.ctrlKey || e.altKey ) {
@@ -130,14 +161,17 @@ function SetEvents() {
         $('#citation_filter').focus();
     });
     $(document).on('click', '.citation_insert_button', function() {
-        InsertInTextareaAtCursor($('#rmd_text')[0], '@' + $(this).attr('data-article'));
         $('#citation_modal').modal('hide');
+        InsertInTextareaAtCursor($('#rmd_text')[0], '@' + $(this).attr('data-article'));
+    });
+    $(document).on('shown.bs.modal', '#citation_modal', function() {
+        $('#citation_filter').focus();
     });
 
     // run from button
     $(document).on('click', '#edit_menu > div > div > button, #menu_search_ddl > #autocomplete_list > .dropdown-item', function(e) {
         // exceptions first
-        if ( $(this).html().indexOf("Reference") != -1 ) {
+        if ( $(this).html().indexOf("Citation") != -1 ) {
             InitReferenceInsert();
         } else {
             RunEditFromButton(this);
@@ -445,6 +479,10 @@ function FileUploadHandler() {
             console.log(r);
             var response = JSON.parse(r);
             FileUploadFinisher(response);
+
+            SetTimeout(function() {
+                $('#bib_filename').focus();
+            }, 1000);
         }
     });
 }
@@ -503,6 +541,8 @@ function FileUploadFinisher(response) {
     }
     else if (!input.files[0]) {
         if ( response.uploadType == "textarea" ) {
+            // manually inserted from the textarea
+
             var thisBib = {};
             bibFiles.push(thisBib);
 
@@ -514,6 +554,13 @@ function FileUploadFinisher(response) {
             thisBib.fileName = response.filePath;
             thisBib.data = b.getEntries();
 
+            // remove the dup first
+            for ( var i = 0 ; i < bibFiles.length ; i++ ) {
+                if ( bibFiles[i].fileName = thisBib.fileName ) {
+                    bibFiles.splice(i, 1);
+                    break;
+                }
+            }
             bibFiles.push(thisBib);
         } else {
             DisplayMessage("Try another file", "error");
@@ -533,17 +580,34 @@ function FileUploadFinisher(response) {
             var thisBib = {};
             thisBib.fileName = response.filePath;
             thisBib.data = b.getEntries();
+
+            // remove the dup first
+            for ( var i = 0 ; i < bibFiles.length ; i++ ) {
+                if ( bibFiles[i].fileName = thisBib.fileName ) {
+                    bibFiles.splice(i, 1);
+                    break;
+                }
+            }
             bibFiles.push(thisBib);
 
             var justTheFileName = thisBib.fileName.split('/').pop();
 
-            // update UI to show this one
+            // remove potential dup UI
+            $('#bib_list > li').each(function() {
+                if ( $(this).html().indexOf(justTheFileName) != -1 ) {
+                    $(this).remove();
+                    return false;
+                }
+            });
+
+            // update UI to show this one 
             var bibHtml = $('#bib_list_template').clone();
             bibHtml.find('.bib_filename').html(justTheFileName);
             bibHtml.find('.bib_file_length').html(Object.keys(thisBib.data).length + " articles");
             bibHtml.removeAttr('id');
             bibHtml.removeClass('hidden');
             $('#bib_list_template').before(bibHtml);
+            $('#bib_list').focus();
 
             $('#bibtex_upload_file').val('');
         };
@@ -613,7 +677,6 @@ function InitReferenceInsert() {
         $('#citation_list').append(html);
     }
 
-
     $('#citation_modal').modal('show');
 }
 
@@ -634,9 +697,8 @@ function FilterCitations() {
 function EditText(item) {
     // idea: we want to insert pre / post text from the item around our current selection 
 
-    $('#rmd_text')[0].focus();
-
-    var currentHighlight = window.getSelection().toString();
+    var ta = $('textarea').get(0);
+    currentHighlight = ta.value.substring(ta.selectionStart, ta.selectionEnd);
     var insertThis = item.contentPre + currentHighlight + item.contentPost;
 
     InsertInTextareaAtCursor($('#rmd_text')[0], insertThis);
@@ -644,6 +706,8 @@ function EditText(item) {
 
 function InsertInTextareaAtCursor(myField, myValue) {
     // stolen from https://stackoverflow.com/questions/11076975/insert-text-into-textarea-at-cursor-position-javascript
+
+    $(myField).focus();
 
     //IE support
     if (document.selection) {
@@ -665,8 +729,6 @@ function InsertInTextareaAtCursor(myField, myValue) {
     else {
         myField.value += myValue;
     }
-
-    $(myField).focus();
 }
 
 function DisplayMessage(msg, where) {

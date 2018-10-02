@@ -55,9 +55,9 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Reference";
-    menuItem.key = 18; 
-    menuItem.keyName = "F";
+    menuItem.label = "Citation";
+    menuItem.key = 67; 
+    menuItem.keyName = "C";
     menuItem.isShift = true;
     menuItem.isCtrl = true;
     menuItem.isAlt = false;
