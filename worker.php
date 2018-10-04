@@ -161,9 +161,4 @@ echo json_encode($outputData);
 
 $pdo = null; // close con
 
-// bookmark
-// for some reason the pdf is not being rendered when run from php. It works from cmd
-// possible fix https://github.com/jgm/pandoc/issues/1587
-// also, pptx is failing ... it wants pandoc 2.0.5. not sure if I want to do that... disabling for now
-
 ?>

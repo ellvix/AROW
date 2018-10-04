@@ -10,24 +10,32 @@
 $(document).ready(function() {
     Init();
     SetEvents();
-    TestingShit();
+    TestingShit(); // todo: remove this whole thing before publish
 });
 
 // global vars AHAHAHAHAHA TRY AND STOP ME
 var bibFiles = {};
+var cookieStorage = {};
 
 function Init() {
     // create edit menu based on stuff we have here
     CreateMenu();
     SetDefaults();
 
-    // bibtex setup
+    // var setup
     bibFiles = [];
+    cookieStorage.simples = [];
+    cookieStorage.files = [];
+    cookieStorage.headers = [];
+
+    // cookie restore
+    LoadFromCookies();
 }
 function TestingShit() {
 
-    // bibtext modal work
+    // modal work
     //$('#bibtex_modal').modal('show');
+    //$('#advanced_options_wrapper').removeClass('hidden');
 
     /*
     // temp bibtex in var
@@ -45,6 +53,7 @@ function TestingShit() {
     //InitReferenceInsert();
 }
 function SetEvents() {
+
     // custom header triggers
     $(document).on('click', '#advanced_options_trigger', function() {
         if ( $(this).html() == "Show Advanced Options" ) {
@@ -56,7 +65,7 @@ function SetEvents() {
         }
     });
     $(document).on('click', '.cust_header_del_trigger', function() {
-        $(this).parent().parent().remove();
+        RemoveCustHeader(this);
     });
     $(document).on('click', '#cust_header_new_trigger', function() {
         MakeNewHeaderItem();
@@ -177,12 +186,162 @@ function SetEvents() {
             RunEditFromButton(this);
         }
     });
+
+    // save input data as cookie
+    $(document).on('blur', 'input, textarea, select', function() {
+        SaveInputToCookie(this);
+    });
 }
 
 function SetDefaults() {
     // date field in custom header area
     // todo
     
+}
+
+function LoadFromCookies() {
+    var c_tmp = Cookies.getJSON('rmd_storage');
+    if ( typeof(c_tmp) != "undefined") {
+        cookieStorage = c_tmp;
+
+        // simple inputs
+        // just set them
+        cookieStorage.simples.forEach(function(el) {
+            if ( el != null ) {
+                if ( el.type == "text" ) {
+                    $('#' + el.id).val(el.val);
+                } else {
+                    $('#' + el.id).prop('checked', el.val);
+                }
+            }
+        });
+
+        // headers
+        // if we have any, we want to first add them to the existing 4 inputs, and then make more inputs as needed
+        var i = 0;
+        cookieStorage.headers.forEach(function(el) {
+            if ( el != null ) {
+                if ( $('.header_key').length < i + 2 ) { // .header_key is 5 initially, 4 of them active. So we need i + 2
+                    // need to add a row before we can update
+                    MakeNewHeaderItem();
+                }
+
+                $('#cust_header_' + el.type + '_' + i).val(el.val);
+                i++;
+            }
+        });
+
+        // files
+        i = 0;
+        cookieStorage.files.forEach(function(el) {
+            if ( el != null ) {
+                if ( el.type == "bibtex_textarea" ) {
+                    // actually a text area
+                    $('#bibtex_textarea').val(el.val);
+                    MaybeCreateFileFromTextarea();
+                } else {
+                    // proper file, get the text and send reponse data to handler
+                    var res = {};
+                    res.error = "";
+                    res.ID = el.id;
+                    res.message = "";
+                    res.filePath = el.val;
+                    res.uploadType = "cookie";
+
+                    // todo: remove this when final publish is done
+                    el.val = el.val.replace("C:/xampp/htdocs", "http://localhost");
+
+                    $.ajax({
+                        url: el.val, 
+                        dataType: 'text', 
+                        type: 'post', 
+                        success: function(r) {
+                            if ( r.length > 0 ) {
+                                res.txt = r;
+                                FileUploadFinisher(res);
+                            }
+                        }
+                    });
+                }
+
+                i++;
+            }
+        });
+
+    }
+}
+
+function SaveInputToCookie(sender) {
+    // save this input as a cookie
+    // for basic pre rendered inputs, this is easy
+    // for dynamic fields (custom header) we'll have to also add the fields via the js function
+    // for files, we'll have to use the ajax function here to call up the file in the background
+
+    // save this input as a cookie. 
+    // the method will depend on the input in question, so we'll just have sections of IDs
+    var id = $(sender).attr('id');
+    var simpleInputs = ['rmd_name', 'rmd_text', 'bibtex_textarea', 'choice_html', 'choice_docx', 'choice_pdf', 'choice_pptx' ];
+    var thisCookie;
+    var set;
+
+    if ( simpleInputs.includes(id) ) {
+        // simple pre rendered inputs
+        thisCookie = {};
+        if ( $(sender).is(':checkbox') ) {
+            thisCookie.type = "checkbox";
+            thisCookie.val = $(sender).prop('checked');
+        } else {
+            thisCookie.type = "text";
+            thisCookie.val = $(sender).val();
+        }
+        thisCookie.id = id;
+
+        set = "simples"
+    } else if ( id == 'bibtex_upload_file' ) {
+        // do nothing. We handle this in the post file area
+    } else {
+        // custom header
+        thisCookie = {};
+
+        thisCookie.index = Number(id.substr(-1, 1));
+        thisCookie.type = id.substr(-5, 3);
+        thisCookie.val = $(sender).val();
+
+        set = "headers";
+    }
+
+    if ( thisCookie != null ) {
+        // delete the old version of this cookie
+        DeleteThisCookieOld(thisCookie);
+
+        if ( thisCookie.val.length < 1 ) {
+            // blank? don't add it back
+        } else if ( typeof(thisCookie.index) != "undefined" ) {
+            cookieStorage[set][thisCookie.index] = thisCookie;
+        } else {
+            cookieStorage[set].push(thisCookie);
+        }
+    }
+
+    Cookies.set('rmd_storage', cookieStorage);
+}
+
+function DeleteThisCookieOld(thisCookie) {
+    var set;
+    if ( thisCookie.type == "text" || thisCookie.type == "checkbox" ) {
+        set = "simples";
+    } else if ( thisCookie.type == "key" || thisCookie.type == "val" ) {
+        set = "headers";
+    } else {
+        set = "files";
+    }
+
+    for ( var i = 0 ; i < cookieStorage[set].length ; i++ ) {
+        if ( cookieStorage[set][i].val == thisCookie.val ) {
+            cookieStorage[set].splice(i, 1);
+            break;
+        }
+    }
 }
 
 function RunEditFromKey(e) {
@@ -208,7 +367,7 @@ function RunEditFromKey(e) {
 }
 function RunEditFromButton(sender) {
     var key = $(sender).attr('data-item');
-    var menuIndex = Number(key.substr(13, 1)); // note: this will crash if we have more than 9 menus, and will need a regex lookup instead
+    var menuIndex = Number(key.substr(13, 1)); // note: this will crash if we add more than 9 menus in class.js, and will need a regex lookup instead
     var itemIndex = Number(key.substr(15)); 
     var allMenus = GetFullMenuVar();
     var thisItem = allMenus[menuIndex].items[itemIndex];
@@ -263,7 +422,7 @@ function SubmitData() {
             var thisKey = $(this).find('.header_key').val();
             var thisVal = $(this).find('.header_val').val();
             
-            if ( thisKey.length > 0 && thisVal.length > 0 ) {
+            if ( thisKey.length > 0 && thisVal.length > 0 ) { // only accept non blank key val pairs
                 headerHtml += thisKey + ': "' + thisVal + '"\n';
             }
         });
@@ -292,8 +451,6 @@ function SubmitData() {
         data.formats = data.formats.trim();
     });
 
-    console.log(data.rmd_text);
-
     // send
     DisplayMessage("Processing...");
     $.ajax({
@@ -301,7 +458,6 @@ function SubmitData() {
         type: "POST", 
         data: data,
         success: function(r) {
-            //console.log(r);
             var response = JSON.parse(r);
             var err = response.error;
             if ( err.toString() == "" ) {
@@ -361,7 +517,7 @@ function GetAllFileNames() {
 
     $('.format_choice').each(function() {
         if ( $(this).prop('checked') ) {
-            fileNames.push(baseName + "." + $(this).attr('id').substr(7));
+            fileNames.push(baseName.replace(/ /g, "") + "." + $(this).attr('id').substr(7));
         }
     });
 
@@ -460,6 +616,25 @@ function MakeNewHeaderItem() {
     $('#cust_header_template').before(newItem);
     
 }
+function RemoveCustHeader(sender) {
+    // remove cookie, kill row
+    var val = $(sender).parent().parent().find('.header_val').val();
+    var key = $(sender).parent().parent().find('.header_key').val();
+
+    if ( typeof(val) != "undefined" && typeof(key) != "undefined" ) {
+        cookieStorage.headers.forEach(function(item, index, object) {
+            if ( item != null ) {
+                if ( item.val == val || item.val == key ) {
+                    object.splice(index, 1);
+                }
+            }
+        });
+    }
+
+    Cookies.set('rmd_storage', cookieStorage);
+
+    $(sender).parent().parent().remove();
+}
 
 function FileUploadHandler() {
     input = document.getElementById('bibtex_upload_file');
@@ -513,9 +688,13 @@ function MaybeCreateFileFromTextarea() {
 
 }
 
-function FileUploadFinisher(response) {
+function FileUploadFinisher(response, _silent) {
     // on file input change, we add this file to the 'stack' (by which we mean storing its text internally), and update the interface to show the file was loaded (and can be deleted
 
+    // catch errors
+    if ( typeof(_silent) == "undefined" ) {
+        silent = false;
+    }
     if ( typeof(response.error) != 'undefined' ) {
         if ( response.error.length > 0 ) {
             DisplayMessage(response.error, 'error');
@@ -525,102 +704,117 @@ function FileUploadFinisher(response) {
         DisplayMessage('There was an issue saving the file', 'error');
         return;
     }
-
-
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
         console.log("Your browser lacks the capability to save and convert this file");
         return;
     }   
 
+    // init for file / txt read
     input = document.getElementById('bibtex_upload_file');
+    var txt = "";
+    var b = new BibtexParser();
+    var thisBib = {};
+    var thisType = "";
     if (!input) {
         console.log("Um, couldn't find the fileinput element.");
     }
     else if (!input.files) {
         console.log("This browser doesn't seem to support the `files` property of file inputs.");
     }
-    else if (!input.files[0]) {
+    else if (!input.files[0] && response.uploadType != "cookie") {
+        // textarea
         if ( response.uploadType == "textarea" ) {
             // manually inserted from the textarea
+            txt = $('#bibtex_textarea').val();
 
-            var thisBib = {};
-            bibFiles.push(thisBib);
+            thisType = "bibtex_textarea";
 
-            // parse and save BibTex
-            var b = new BibtexParser();
-            b.setInput($('#bibtex_textarea').val());
-            b.bibtex();
-            var thisBib = {};
-            thisBib.fileName = response.filePath;
-            thisBib.data = b.getEntries();
-
-            // remove the dup first
-            for ( var i = 0 ; i < bibFiles.length ; i++ ) {
-                if ( bibFiles[i].fileName = thisBib.fileName ) {
-                    bibFiles.splice(i, 1);
-                    break;
-                }
-            }
-            bibFiles.push(thisBib);
         } else {
+            console.log(response);
             DisplayMessage("Try another file", "error");
         }
     }
-    else {
+    else if (response.uploadType == "cookie" ) {
+        txt = response.txt;
+        thisType = "cookie";
+    } else {
         file = input.files[0];
         fr = new FileReader();
         fr.onload = function() {
-            DisplayMessage('file loaded', 'live');
+            if ( ! silent ) {
+                DisplayMessage('file loaded', 'live');
+            }
             var txt = fr.result;
 
-            // parse and save BibTex
-            var b = new BibtexParser();
-            b.setInput(txt);
-            b.bibtex();
-            var thisBib = {};
-            thisBib.fileName = response.filePath;
-            thisBib.data = b.getEntries();
-
-            // remove the dup first
-            for ( var i = 0 ; i < bibFiles.length ; i++ ) {
-                if ( bibFiles[i].fileName = thisBib.fileName ) {
-                    bibFiles.splice(i, 1);
-                    break;
-                }
-            }
-            bibFiles.push(thisBib);
-
-            var justTheFileName = thisBib.fileName.split('/').pop();
-
-            // remove potential dup UI
-            $('#bib_list > li').each(function() {
-                if ( $(this).html().indexOf(justTheFileName) != -1 ) {
-                    $(this).remove();
-                    return false;
-                }
-            });
-
-            // update UI to show this one 
-            var bibHtml = $('#bib_list_template').clone();
-            bibHtml.find('.bib_filename').html(justTheFileName);
-            bibHtml.find('.bib_file_length').html(Object.keys(thisBib.data).length + " articles");
-            bibHtml.removeAttr('id');
-            bibHtml.removeClass('hidden');
-            $('#bib_list_template').before(bibHtml);
-            $('#bib_list').focus();
-
-            $('#bibtex_upload_file').val('');
+            thisType = "file";
         };
 
         fr.readAsText(file);
         //fr.readAsDataURL(file); // doesn't work
     }
+
+    // process and save the bibtex
+    thisBib.fileName = response.filePath;
+    thisBib.data = b.getEntries();
+
+    var b = new BibtexParser();
+    b.setInput(txt);
+    b.bibtex();
+    var thisBib = {};
+    thisBib.fileName = response.filePath;
+    thisBib.data = b.getEntries();
+
+    // remove the dup first
+    for ( var i = 0 ; i < bibFiles.length ; i++ ) {
+        if ( bibFiles[i].fileName = thisBib.fileName ) {
+            bibFiles.splice(i, 1);
+            break;
+        }
+    }
+    bibFiles.push(thisBib);
+
+    // store this as a cookie
+    if ( thisType != "cookie" ) {
+        var thisCookie = {};
+        thisCookie.type = thisType;
+        thisCookie.id = bibFiles.length; // a throwaway id. we can't rely on these as they'll be too dynamic
+        thisCookie.val = thisBib.fileName;
+        DeleteThisCookieOld(thisCookie);
+        cookieStorage.files.push(thisCookie);
+    }
+
+    // update the UI
+    if ( thisType == "file" || thisType == "cookie" ) {
+
+        var justTheFileName = thisBib.fileName.split('/').pop();
+
+        // remove potential dup UI
+        $('#bib_list > li').each(function() {
+            if ( $(this).html().indexOf(justTheFileName) != -1 ) {
+                $(this).remove();
+                return false;
+            }
+        });
+
+        // update UI to show this one 
+        var bibHtml = $('#bib_list_template').clone();
+        bibHtml.find('.bib_filename').html(justTheFileName);
+        bibHtml.find('.bib_file_length').html(Object.keys(thisBib.data).length + " articles");
+        bibHtml.removeAttr('id');
+        bibHtml.removeClass('hidden');
+        $('#bib_list_template').before(bibHtml);
+        $('#bib_list').focus();
+
+        $('#bibtex_upload_file').val('');
+    }
+
 }
 
 function BibtexRemoveFile(sender) {
-    // remove data, and remove this li
+    // remove data, and remove this li and cookie
 
-    var fileName = $(sender).find('.bib_filename').html();
+    var fileName = $(sender).parent().find('.bib_filename').html();
+
     var numItems = bibFiles.length;
     for ( var i = 0 ; i < numItems ; i++ ) {
         if ( bibFiles[i].fileName.indexOf(fileName) > -1 ) {
@@ -628,6 +822,15 @@ function BibtexRemoveFile(sender) {
             break;
         }
     }
+
+    for ( var i = 0 ; i < cookieStorage.files.length ; i++ ) {
+        if ( cookieStorage.files[i].val.indexOf(fileName) != -1 ) {
+            cookieStorage.files.splice(i, 1);
+            Cookies.set('rmd_storage', cookieStorage);
+            break;
+        }
+    }
+
 
     $(sender).parent().remove(); 
 }
