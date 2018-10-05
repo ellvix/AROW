@@ -29,7 +29,7 @@ try {
 
     $sqlIsWorking = true;
 
-    if ( DB_SERVER == "localhost" ) {
+    if ( defined('DB_PLATFORM') ) {
         $platform = "localhost";
     }
 } catch (Exception $e) {

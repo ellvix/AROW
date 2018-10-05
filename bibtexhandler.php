@@ -8,6 +8,7 @@ $uploadType = "file";
 $filePath = "";
 $testingLevel = 2;
 $id = 0;
+$fileContents = "";
 
 // connections
 $sqlIsWorking = false;
@@ -51,6 +52,8 @@ if ( $sqlIsWorking ) {
             $file = fopen($filePath , 'w');
             fwrite($file, $_POST['textarea']);
             fclose($file);
+
+            $fileContents = $_POST['textarea'];
         } else {
             $errorMsg .= "<p>Failed to save manually entered text</p>\n";
         }
@@ -68,15 +71,16 @@ if ( $sqlIsWorking ) {
             }
             $filePath = $path . '/' . $_FILES['file']['name'];
             move_uploaded_file($_FILES['file']['tmp_name'], $filePath);
+
+            $fileContents = file_get_contents($filePath);
         }
     }
-
 }
 
 $filePath = __DIR__ . "/" . $filePath;
 $filePath = str_replace("\\", "/", $filePath);
 
-$outputData = array("error" => $errorMsg, "ID" => $id, "message" => $sysMsg, "filePath" => $filePath, "uploadType" => $uploadType);
+$outputData = array("error" => $errorMsg, "ID" => $id, "message" => $sysMsg, "filePath" => $filePath, "uploadType" => $uploadType, "fileContents" => $fileContents);
 echo json_encode($outputData);
 
 $pdo = null; // close con

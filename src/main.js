@@ -248,8 +248,8 @@ function LoadFromCookies() {
                     res.filePath = el.val;
                     res.uploadType = "cookie";
 
-                    // todo: remove this when final publish is done
-                    el.val = el.val.replace("C:/xampp/htdocs", "http://localhost");
+                    // redo filename, as it's a full file path atm, not http path
+                    el.val = "output/" + el.id + "/" + el.val.split('/').pop();
 
                     $.ajax({
                         url: el.val, 
@@ -655,9 +655,7 @@ function FileUploadHandler() {
             var response = JSON.parse(r);
             FileUploadFinisher(response);
 
-            SetTimeout(function() {
-                $('#bib_filename').focus();
-            }, 1000);
+            $('#bib_filename').focus();
         }
     });
 }
@@ -730,7 +728,6 @@ function FileUploadFinisher(response, _silent) {
             thisType = "bibtex_textarea";
 
         } else {
-            console.log(response);
             DisplayMessage("Try another file", "error");
         }
     }
@@ -738,19 +735,8 @@ function FileUploadFinisher(response, _silent) {
         txt = response.txt;
         thisType = "cookie";
     } else {
-        file = input.files[0];
-        fr = new FileReader();
-        fr.onload = function() {
-            if ( ! silent ) {
-                DisplayMessage('file loaded', 'live');
-            }
-            var txt = fr.result;
-
-            thisType = "file";
-        };
-
-        fr.readAsText(file);
-        //fr.readAsDataURL(file); // doesn't work
+        txt = response.fileContents;
+        thisType = "file";
     }
 
     // process and save the bibtex
