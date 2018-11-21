@@ -13,6 +13,14 @@ a {
     position: relative;
 }
 
+.btn-primary {
+    background-color: #006cdf;
+}
+.btn-success {
+    background-color: #1d7631;
+}
+
+
 /* header / nav */
 
 #header_wrapper {
