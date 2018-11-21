@@ -58,9 +58,9 @@ function GetFullMenuVar() {
     menuItem.label = "Citation";
     menuItem.key = 67; 
     menuItem.keyName = "C";
-    menuItem.isShift = true;
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
+    menuItem.isShift = false;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
     menuItem.contentPre = " ![alt tag](filename) ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);

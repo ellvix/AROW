@@ -10,7 +10,7 @@
 $(document).ready(function() {
     Init();
     SetEvents();
-    TestingShit(); // todo: remove this whole thing before publish
+    //TestingShit(); // todo: remove this whole thing before publish
 });
 
 // global vars AHAHAHAHAHA TRY AND STOP ME
@@ -58,9 +58,11 @@ function SetEvents() {
     $(document).on('click', '#advanced_options_trigger', function() {
         if ( $(this).html() == "Show Advanced Options" ) {
             $(this).html('Hide Advanced Options');
+            $(this).attr('aria-expanded', "true");
             $('#advanced_options_wrapper').removeClass('hidden');
         } else {
             $(this).html('Show Advanced Options');
+            $(this).attr('aria-expanded', "false");
             $('#advanced_options_wrapper').addClass('hidden');
         }
     });
@@ -68,7 +70,7 @@ function SetEvents() {
         RemoveCustHeader(this);
     });
     $(document).on('click', '#cust_header_new_trigger', function() {
-        MakeNewHeaderItem();
+        MakeNewHeaderItem(true);
     });
 
     $(document).on('click', '#main_submit', function() {
@@ -151,6 +153,18 @@ function SetEvents() {
         }
     });
 
+    // bootstrap dropdown menu aria
+    $(document).on('click', '.dropdown-toggle', function() {
+        var isExpanded = $(this).next('.dropdown-menu').attr('aria-expanded') == "true";
+        if ( isExpanded ) {
+            $(this).next('.dropdown-menu').attr('aria-expanded', 'false');
+        } else {
+            $(this).next('.dropdown-menu').attr('aria-expanded', 'true');
+        }
+
+        // bug: this event will only fire once, no idea why atm
+    });
+
     // bibtex events
     $(document).on('change', '#bibtex_upload_file', function() {
         FileUploadHandler();
@@ -223,7 +237,7 @@ function LoadFromCookies() {
             if ( el != null ) {
                 if ( $('.header_key').length < i + 2 ) { // .header_key is 5 initially, 4 of them active. So we need i + 2
                     // need to add a row before we can update
-                    MakeNewHeaderItem();
+                    MakeNewHeaderItem(false);
                 }
 
                 $('#cust_header_' + el.type + '_' + i).val(el.val);
@@ -530,20 +544,21 @@ function CreateMenu() {
     var searchHtml = "";
     var allMenus = GetFullMenuVar();
 
+    // pre
     searchHtmlFull += '<div class="inline btn-group" role="group" id="menu_search_wrapper">\n';
-    searchHtmlFull += '<button class="btn btn-secondary dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
-    searchHtmlFull += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl">\n';
-    searchHtmlFull += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list" aria-haspopup="false" aria-expanded="false">\n';
+    searchHtmlFull += '<button class="btn btn-secondary dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
+    searchHtmlFull += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl" aria-expanded="false">\n';
+    searchHtmlFull += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list" aria-haspopup="false">\n';
     searchHtml += '<div role="listbox" id="autocomplete_list" aria-expanded="true">\n';
 
-
+    // main 
     for ( var k = 0 ; k < allMenus.length ; k++ ) {
         var menu = allMenus[k];
         var menuId = "menu_" + k;
         var menuItems = menu.items;
 
         menuHtml += '<div class="inline btn-group" role="group">\n';
-        menuHtml += '<button class="btn btn-secondary dropdown-toggle" type="button" id="' + menuId + '" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
+        menuHtml += '<button class="btn btn-secondary dropdown-toggle" type="button" id="' + menuId + '_label" aria-controls="' + menuId + '_wrapper" aria-haspopup="true" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
         if ( typeof(allMenus[k].key) != "undefined" ) {
             menuHtml += '<span class="sr-only"> (';
             if ( menu.isCtrl ) {
@@ -558,7 +573,7 @@ function CreateMenu() {
             menuHtml += menu.keyName + ')</span>';
         }
         menuHtml += '</button>\n';
-        menuHtml += '<div class="dropdown-menu" aria-labelledby="' + menuId + '">\n';
+        menuHtml += '<div class="dropdown-menu" aria-labelledby="' + menuId + '_label" id="' + menuId + '_wrapper" aria-expanded="false">\n';
 
         var numItems = menuItems.length;
         for ( var i = 0 ; i < numItems ; i++ ) {
@@ -582,6 +597,7 @@ function CreateMenu() {
             searchHtml += listHtml;
         }
         
+        // post
         menuHtml += "</div>\n";
         menuHtml += "</div>\n";
     }
@@ -599,7 +615,7 @@ function CreateMenu() {
     $('#edit_menu').html(html);
 }
 
-function MakeNewHeaderItem() {
+function MakeNewHeaderItem(isManual) {
     var newItem = $('#cust_header_template').clone();
     var thisItemNumber = Number($('.cust_header_row').length);
     if ( isNaN(thisItemNumber) ) {
@@ -614,6 +630,10 @@ function MakeNewHeaderItem() {
     newItem.find('.header_val').attr('id', 'cust_header_val_' + thisItemNumber);
 
     $('#cust_header_template').before(newItem);
+
+    if ( isManual ) {
+        $("#cust_header_key_" + thisItemNumber).focus();
+    }
     
 }
 function RemoveCustHeader(sender) {

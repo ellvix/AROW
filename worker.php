@@ -4,7 +4,7 @@
 
 // control vars
 $sysMsg = "";
-$testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$testingLevel = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
 $platform = "aws"; // aws, xampp (local)
 

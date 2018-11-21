@@ -6,7 +6,7 @@ $errorMsg = "";
 $sysMsg = "";
 $uploadType = "file";
 $filePath = "";
-$testingLevel = 2;
+$testingLevel = 0;
 $id = 0;
 $fileContents = "";
 
