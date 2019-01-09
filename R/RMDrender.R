@@ -10,34 +10,16 @@ args = commandArgs(trailingOnly=TRUE)
 
 path = ".\\RMD_src\\untitled.rmd"# a default path in case our param fails
 
-outputType <- c()
-outputType <- c(outputType, 'html_document')
 if ( length(args) > 0 ) {
     path = ""
     path = args[1]
     print(path)
-
-    outputType <- c()
-    if ( grepl('html', args[3])) {
-        outputType <- c(outputType, 'html_document')
-    }
-    if ( grepl('docx', args[3] )) {
-        outputType <- c(outputType, 'word_document')
-    }
-    if ( grepl('pdf', args[3] )) {
-        outputType <- c(outputType, 'pdf_document')
-    }
-    if ( grepl('pptx', args[3] )) {
-        outputType <- c(outputType, 'powerpoint_presentation')
-    }
-    if ( length(outputType) == 0 ) {
-        # default
-        outputType <- c(outputType, 'html_document')
-    }
 }
 
 result = tryCatch({
-    rmarkdown::render(path, output_format=outputType)
+
+    rmarkdown::render(path, output_format="all")
+
 }, error=function(cond){
     print("R Error")
     print(paste("[", cond, "]"))

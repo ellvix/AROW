@@ -30,6 +30,8 @@ function Init() {
 
     // cookie restore
     LoadFromCookies();
+
+    MaybeDisableSubmit();
 }
 function TestingShit() {
 
@@ -73,8 +75,17 @@ function SetEvents() {
         MakeNewHeaderItem(true);
     });
 
-    $(document).on('click', '#main_submit', function() {
+    $(document).on('click', '.format_choice', function() {
+        MaybeDisableSubmit();
+    });
+    $(document).on('blur', '#rmd_text, #rmd_name', function() {
+        MaybeDisableSubmit();
+    });
+    $(document).on('click', '#main_submit:not(.disabled)', function() {
         SubmitData();
+    });
+    $(document).on('click', '#main_submit.disabled', function() {
+        $('#cant_submit_modal').modal('show');
     });
 
     // go to search box: alt + /
@@ -358,6 +369,36 @@ function DeleteThisCookieOld(thisCookie) {
     }
 }
 
+function ClearCookies() {
+    Cookies.remove('rmd_storage');
+}
+
+function MaybeDisableSubmit() {
+    var canSubmit = true;
+
+    if ( $('#rmd_text').val().trim().length == 0 ) {
+        canSubmit = false;
+    } else if ( $('#rmd_name').val().trim().length == 0 ) {
+        canSubmit = false;
+    } else {
+        var hasAChoice = false;
+        $('.format_choice').each(function() {
+            if ( $(this).prop('checked') ) {
+                hasAChoice = true;
+                return false;
+            }
+        });
+
+        canSubmit = hasAChoice;
+    }
+
+    if ( canSubmit ) {
+        $('#main_submit').removeClass('disabled');
+    } else {
+        $('#main_submit').addClass('disabled');
+    }
+}
+
 function RunEditFromKey(e) {
     // look through all current edit options for a key combo match
     var allMenus = GetFullMenuVar();
@@ -492,7 +533,7 @@ function DisplaySuccess(response) {
     var downloadMessage = "";
     var sysMessage = "";
 
-    msg += "<p>Completed successfully!</p>\n";
+    downloadMessage += "<p>Processing complete.</p>\n";
 
     // display all files that were created
     var allFileNames = GetAllFileNames();
@@ -504,25 +545,35 @@ function DisplaySuccess(response) {
             if ( typeof(response.created_filenames) != "undefined" ) {
                 if ( response.created_filenames.indexOf(allFileNames[i]) != -1 ) {
                     downloadMessage += '<p><a href="output/' + response.ID + "/" + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
+                } else {
+                    console.log("issue finding " + allFileNames[i]);
                 }
             }
         }
     }
 
     if ( typeof(response.message) != "undefined" ) {
-        sysMessage += "<div>" + response.message + "</div>\n";
+        if ( response.message.length > 0 ) {
+            sysMessage += "<div>" + response.message + "</div>\n";
+        }
     }
 
 
     msg = msg.replace(/\n/g, "<br>");
     msg = msg.replace(/\r/g, "<br>");
+    msg = msg.trim();
     sysMessage = sysMessage.replace(/\n/g, "<br>");
     sysMessage = sysMessage.replace(/\r/g, "<br>");
+    sysMessage = sysMessage.trim();
 
     DisplayMessage(downloadMessage, "output")
-    DisplayMessage(msg, "live_sr")
-    DisplayMessage(msg, "live_visual")
-    DisplayMessage(sysMessage, "system_message")
+    if ( msg.length > 0 ) {
+        DisplayMessage(msg, "live_sr")
+        DisplayMessage(msg, "live_visual")
+    }
+    if ( sysMessage.length > 0 ) {
+        DisplayMessage(sysMessage, "system_message")
+    }
 }
 
 function GetAllFileNames() {
@@ -545,7 +596,7 @@ function CreateMenu() {
     var allMenus = GetFullMenuVar();
 
     // pre
-    searchHtmlFull += '<div class="inline btn-group" role="group" id="menu_search_wrapper">\n';
+    searchHtmlFull += '<div class="inline btn-group" id="menu_search_wrapper">\n';
     searchHtmlFull += '<button class="btn btn-secondary dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
     searchHtmlFull += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl" aria-expanded="false">\n';
     searchHtmlFull += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list" aria-haspopup="false">\n';
@@ -557,7 +608,7 @@ function CreateMenu() {
         var menuId = "menu_" + k;
         var menuItems = menu.items;
 
-        menuHtml += '<div class="inline btn-group" role="group">\n';
+        menuHtml += '<div class="inline btn-group">\n';
         menuHtml += '<button class="btn btn-secondary dropdown-toggle" type="button" id="' + menuId + '_label" aria-controls="' + menuId + '_wrapper" aria-haspopup="true" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
         if ( typeof(allMenus[k].key) != "undefined" ) {
             menuHtml += '<span class="sr-only"> (';
@@ -671,11 +722,11 @@ function FileUploadHandler() {
         data: data, 
         type: 'post', 
         success: function(r) {
-            console.log(r);
             var response = JSON.parse(r);
             FileUploadFinisher(response);
 
-            $('#bib_filename').focus();
+            //$('#bib_filename').focus(); // doesn't reliably work
+            $('#bibtex_modal').modal('hide');
         }
     });
 }
@@ -689,16 +740,12 @@ function MaybeCreateFileFromTextarea() {
     if ( data.textarea.length > 0 ) {
         var thisBib = {};
 
-        console.log('sending jsondata');
-        console.log(data);
-
         $.ajax({
             url: "bibtexhandler.php",
             data: data, 
             dataType: 'json',
             type: 'post', 
             success: function(r) {
-                console.log(r);
                 FileUploadFinisher(r);
             }
         });
@@ -837,8 +884,8 @@ function BibtexRemoveFile(sender) {
         }
     }
 
-
     $(sender).parent().remove(); 
+    DisplayMessage("Bibtex file removed", "live");
 }
 
 function InitReferenceInsert() {
@@ -878,7 +925,7 @@ function InitReferenceInsert() {
     for ( var i = 0 ; i < numItems ; i++ ) {
         var html = '';
         html += '<li class="list-group-item">\n';
-        html += '<button class="invis_button citation_insert_button" data-article="' + data[i][1].BIBTEXKEY + '" role="button" title="' + data[i][1].TITLE + '">';
+        html += '<button class="invis_button citation_insert_button" data-article="' + data[i][1].BIBTEXKEY + '" title="' + data[i][1].TITLE + '">';
         html += data[i][1].TITLE;
         html += '</button>\n';
         html += '</li>\n';

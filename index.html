@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
@@ -25,8 +25,7 @@
 
     <body>
         <div id="header_wrapper">
-            <header class="wrapper clearfix" role="banner" aria-label="header" id="header">
-                <a href="#main" class="sr-only">Skip to main content</a>
+            <header class="wrapper clearfix" aria-label="header" id="header">
                 <div class="container relative">
                     <!--
                     <div id="psu_icon_wrapper">
@@ -69,9 +68,8 @@
             <div id="input">
 
                 <div class="mb-3">
-                    <p class="float-left"><label for="rmd_text">Main text area</label></p>
-                    <div class="btn-group float-right" id="edit_menu" role="group" aria-label="insert and edit options">
-                    </div>
+                    <div class="btn-group float-right" id="edit_menu" role="group" aria-label="insert and edit options"></div>
+                    <h3 class="float-left" id="rmd_text_heading"><label for="rmd_text">Main text area</label></h3>
                 </div>
 
                 <div>
@@ -131,7 +129,7 @@ Sys.time()
                     </div>
                     <div>
                         <h3>BibTeX Citations</h3>
-                        <p>Add a set of BibTeX citations to be able to be used in the main text area below.</p>
+                        <p>Add a set of BibTeX citations to be able to be used in the main text area.</p>
                         <p><button type="button" class="btn btn-default" id="bibtex_popup_trigger" data-toggle="modal" data-target="#bibtex_modal">Manage BibTeX</button></p>
                     </div>
                     <hr>
@@ -167,7 +165,7 @@ Sys.time()
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p class="alert alert-secondary" role="alert"><button role="button" data-toggle="collapse" data-target="#bibtex_explanation" aria-expanded="false" aria-controls="bibtex_explanation" title="What is BibTeX and how would it be used?" class="invis_button">What is BibTeX and how would it be used?</button></p>
+                        <p class="alert alert-secondary" role="alert"><button data-toggle="collapse" data-target="#bibtex_explanation" aria-expanded="false" aria-controls="bibtex_explanation" title="What is BibTeX and how would it be used?" class="invis_button">What is BibTeX and how would it be used?</button></p>
                         <div class="collapse" id="bibtex_explanation">
                             <div class="jumbotron">
                                 <p><a href="http://www.bibtex.org/" target="_blank">BibTeX</a> is tool for managing references. Raw BibTeX is text that contains information about one or more specific references, and is used here to more easily cite references in the main text area.</p>
@@ -249,7 +247,25 @@ Sys.time()
                     </div>
                 </div>
             </div>
-        </div> <!-- end citation_modal //-->
+        </div> <!-- end error_modal //-->
+        <div class="modal fade" id="cant_submit_modal" tabindex="-1" role="dialog" aria-labelledby="cant_submit_modal_title" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cant_submit_modal_title">Can't Submit Yet</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Before submitting, make sure you've selected at least one file type to create, have a file name, and have some text in the main input area.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end cant_submit_modal //-->
     </body>
 </html>
 
