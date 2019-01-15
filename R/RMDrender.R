@@ -18,7 +18,7 @@ if ( length(args) > 0 ) {
 
 result = tryCatch({
 
-    rmarkdown::render(path, output_format="all")
+    rmarkdown::render(path, output_format="all", encoding="UTF-8")
 
 }, error=function(cond){
     print("R Error")

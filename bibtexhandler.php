@@ -10,37 +10,18 @@ $testingLevel = 0;
 $id = 0;
 $fileContents = "";
 
-// connections
-$sqlIsWorking = false;
-try {
-    include("../inc/dbinfo.inc");
-    $pdo = new PDO("mysql:host=" . DB_SERVER . ";port=3306;dbname=" . DB_DATABASE, DB_USERNAME, DB_PASSWORD, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-
-    $sqlIsWorking = true;
-} catch (Exception $e) {
-    $sysMsg .= "<p>sql err: " . $e->getMessage() . "</p>\n";
+// get folder info
+$isDirSet = false;
+if ( ! isset ( $_SESSION_['folder_id'] ) ) {
+    $isDirSet = GetNewId();
+}
+if ( ! $isDirSet ) {
+    $errorMsg .= "<p>Error creating new ID.</p>\n";
 }
 
-if ( $sqlIsWorking ) {
+if ( $isDirSet ) {
 
-    // where do we save this file? (what ID in sql?)
-    $ip = $_SERVER['REMOTE_ADDR']; 
-
-    $sql = "CALL StoreNewIPOnly(:ip_address,@id)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':ip_address', $ip, PDO::PARAM_STR);
-    $stmt->execute();
-
-    $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $stmt->closeCursor();
-    if ( isset ( $row[0]['id'] ) ) {
-        $id = (int)$row[0]['id'];
-    } else {
-        $errorMsg .= "<p>Failed to save file, sql error.</p>";
-    }
-    if ( $testingLevel > 1 ) {
-        $sysMsg .= "<p>Fetched or created non 0 ID: $id</p>\n";
-    }
+    $id = $_SESSION['folder_id'];
     $path = 'output/' . $id;
 
     // actual file upload. Do we have an actual file, or text?
@@ -82,7 +63,5 @@ $filePath = str_replace("\\", "/", $filePath);
 
 $outputData = array("error" => $errorMsg, "ID" => $id, "message" => $sysMsg, "filePath" => $filePath, "uploadType" => $uploadType, "fileContents" => $fileContents);
 echo json_encode($outputData);
-
-$pdo = null; // close con
 
 ?>
