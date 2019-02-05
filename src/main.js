@@ -27,6 +27,8 @@ function Init() {
     cookieStorage.simples = [];
     cookieStorage.files = [];
     cookieStorage.headers = [];
+    cookieStorage.settings = [];
+    cookieStorage.settings = [];
 
     // cookie restore
     LoadFromCookies();
@@ -86,6 +88,11 @@ function SetEvents() {
     });
     $(document).on('click', '#main_submit.disabled', function() {
         $('#cant_submit_modal').modal('show');
+    });
+
+    // modifier
+    $(document).on('click', '#change_mod_key', function() {
+        StartChangeModKey();
     });
 
     // go to search box: alt + /
@@ -214,7 +221,20 @@ function SetEvents() {
 
     // save input data as cookie
     $(document).on('blur', 'input, textarea, select', function() {
-        SaveInputToCookie(this);
+        var canSave = true;
+        if ( typeof(cookieStorage.settings.save) != "undefined" ) {
+            if ( ! cookieStorage.settings.save ) {
+                canSave = false;
+            }
+        }
+        if ( canSave ) {
+            SaveInputToCookie(this);
+        }
+    });
+
+    // Save data with cookies?
+    $(document).on('click', '.acceptcookies', function() {
+        SetSaveUsingCookies($('#input_cookie_save').prop('checked'));
     });
 }
 
@@ -228,6 +248,13 @@ function LoadFromCookies() {
     var c_tmp = Cookies.getJSON('rmd_storage');
     if ( typeof(c_tmp) != "undefined") {
         cookieStorage = c_tmp;
+
+        // modKey
+        if ( cookieStorage.modKey != null ) {
+            var modKey = cookieStorage.modKey;
+            $('#mod_key').val(modKey);
+            $('#mod_key_current_name').html(String.fromCharCode(modKey));
+        }
 
         // simple inputs
         // just set them
@@ -306,12 +333,11 @@ function SaveInputToCookie(sender) {
     // the method will depend on the input in question, so we'll just have sections of IDs
     var id = $(sender).attr('id');
     var simpleInputs = ['rmd_name', 'rmd_text', 'bibtex_textarea', 'choice_html', 'choice_docx', 'choice_pdf', 'choice_pptx' ];
-    var thisCookie;
+    var thisCookie = {};
     var set;
 
     if ( simpleInputs.includes(id) ) {
         // simple pre rendered inputs
-        thisCookie = {};
         if ( $(sender).is(':checkbox') ) {
             thisCookie.type = "checkbox";
             thisCookie.val = $(sender).prop('checked');
@@ -324,9 +350,13 @@ function SaveInputToCookie(sender) {
         set = "simples"
     } else if ( id == 'bibtex_upload_file' ) {
         // do nothing. We handle this in the post file area
+    } else if ( id == "mod_key" ) {
+        var modKey = Number($('#mod_key').val());
+        thisCookie.val = modKey;
+        thisCookie.type = "setting"
+        set = "modKey";
     } else {
         // custom header
-        thisCookie = {};
 
         thisCookie.index = Number(id.substr(-1, 1));
         thisCookie.type = id.substr(-5, 3);
@@ -339,7 +369,9 @@ function SaveInputToCookie(sender) {
         // delete the old version of this cookie
         DeleteThisCookieOld(thisCookie);
 
-        if ( thisCookie.val.length < 1 ) {
+        if ( thisCookie.type == "setting" ) {
+            cookieStorage[set] = thisCookie.val;
+        } else if ( thisCookie.val.length < 1 ) {
             // blank? don't add it back
         } else if ( typeof(thisCookie.index) != "undefined" ) {
             cookieStorage[set][thisCookie.index] = thisCookie;
@@ -348,6 +380,11 @@ function SaveInputToCookie(sender) {
         }
     }
 
+    Cookies.set('rmd_storage', cookieStorage);
+}
+
+function SetSaveUsingCookies(yesno) {
+    cookieStorage.settings.save = yesno;
     Cookies.set('rmd_storage', cookieStorage);
 }
 
@@ -371,6 +408,41 @@ function DeleteThisCookieOld(thisCookie) {
 
 function ClearCookies() {
     Cookies.remove('rmd_storage');
+}
+
+function StartChangeModKey() {
+    if ( $('#change_mod_key').html() == "Change Modifier Key" ) {
+        var countDuration = 10;
+        var currentTimer = countDuration;
+        $('#change_mod_key').html('Choose a key now (<span id="mod_key_countdown">' + currentTimer + '</span>)');
+
+        var interval = setInterval(function() {
+            currentTimer--;
+
+            $('#change_mod_key').html('Choose a key now (<span id="mod_key_countdown">' + currentTimer + '</span>)');
+
+            if ( currentTimer <= 0 ) {
+                ClearChangeModKey(interval, null)
+            }
+        }, currentTimer * 100);
+
+        $(document).on('keydown', 'body', function(e) {
+            // todo: pick key!
+            ClearChangeModKey(interval, e);
+        });
+    }
+}
+function ClearChangeModKey(interval, e) {
+    clearInterval(interval);
+    $(document).off('keydown', 'body');
+    $('#change_mod_key').html('Change Modifier Key');
+
+    if ( e != null ) {
+        $('#mod_key').val(e.keyCode);
+        $('#mod_key_current_name').html(e.key);
+
+        SaveInputToCookie($('#mod_key')[0]);
+    }
 }
 
 function MaybeDisableSubmit() {
@@ -481,6 +553,14 @@ function SubmitData() {
                 headerHtml += thisKey + ': "' + thisVal + '"\n';
             }
         });
+    }
+
+    // csl
+    var cslOption = $('#bibtex_csl_type > option:selected').attr('data-cit_yaml');
+    if ( typeof(cslOption) != "undefined" ) {
+        headerHtml += 'csl: "' + cslOption + '.csl"\n';
+    } else {
+        headerHtml += 'csl: "apa6.csl"\n';
     }
 
     // add bibtex info (if any)

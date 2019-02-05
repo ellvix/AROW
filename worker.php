@@ -83,6 +83,8 @@ if ( $haveData && $isDirSet ) {
 
         // write input data to file
         $fileContents = $_POST['rmd_text'];
+        //$fileContents = mb_convert($fileContents, 'UTF-8', 'auto');
+        $fileContents = utf8_encode($fileContents);
         $file = "$dir/$fileName.rmd"; 
         mkdir($dir);
         file_put_contents($file, $fileContents);

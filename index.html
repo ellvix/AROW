@@ -11,6 +11,7 @@
 
         <link rel="stylesheet" href="src/bootstrap/css/bootstrap.min.css" >
         <link rel="stylesheet" href="src/open-iconic/font/css/open-iconic-bootstrap.min.css" >
+        <link rel="stylesheet" href="src/cookiealert.css" >
         <link href="src/styles.css" rel="stylesheet"/>
 
         <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
@@ -94,7 +95,15 @@ Sys.time()
                 </div>
 
                 <p class="text-center"><button class="btn btn-default" id="advanced_options_trigger" aria-expanded="false" aria-controls="advanced_options_wrapper">Show Advanced Options</button></p>
+
                 <div class="form-group hidden" id="advanced_options_wrapper">
+
+                    <div>
+                        <h3>Modifier Key</h3>
+                        <p>Shortcuts are done holding the modifier key and pressing the relevant shortcut. Modifier is currently <span id="mod_key_current_name">Tilde</span>. <button class="btn btn-default ml-2" id="change_mod_key">Change Modifier Key</button></p>
+                        <input type="hidden" id="mod_key" value="192" />
+                    </div>
+
                     <div>
                         <h3>Custom Headers</h3>
                         <p>Add any header information you want here. Some defaults are provided to give you the idea</p>
@@ -183,6 +192,17 @@ Sys.time()
                         </div> <!-- end explanation //-->
                         <div>
                             <div class="form-group">
+                                <label for="bibtex_csl_type">Choose the citation style</label>
+                                <select class="form-control" id="bibtex_csl_type">
+                                    <option data-cit_yaml="apa6">APA (American Psychological Association) 6th edition</option>
+                                    <option data-cit_yaml="mla8">MLA (Modern Language Association) 8th edition</option>
+                                    <option data-cit_yaml="chicago17">Chicago Manual of Style 17th edition</option>
+                                    <option data-cit_yaml="harvard-cite-them-right">Harvard Cite Them Right 10th edition</option>
+                                    <option data-cit_yaml="acm">ACM (Association for Computing Machinery)</option>
+                                    <option data-cit_yaml="ieee">IEEE (Institute of Electrical and Electronics Engineers)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="bibtex_upload_file">Upload a BibTeX file (.bib or .bibtex)</label>
                                 <input type="file" class="form-control-file" id="bibtex_upload_file">
                             </div>
@@ -266,6 +286,13 @@ Sys.time()
                 </div>
             </div>
         </div> <!-- end cant_submit_modal //-->
+        <div class="alert text-center cookiealert" role="alert"><!-- START Bootstrap-Cookie-Alert -->
+            <b>This website uses cookies to save your work between sessions. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a></b>
+            <label for="input_cookie_save" class="mr-2 ml-2">Sure, save my work</label><input type="checkbox" checked id="input_cookie_save">
+
+            <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">I agree</button>
+        </div><!-- END Bootstrap-Cookie-Alert -->
     </body>
+    <script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script>
 </html>
 
