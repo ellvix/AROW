@@ -20,8 +20,8 @@ function GetFullMenuVar() {
     //menuItem.label = "Heading / Preamble";
     //menuItem.key = 72; 
     //menuItem.keyName = "H";
-    //menuItem.isShift = true;
-    //menuItem.isCtrl = true;
+    //menuItem.isShift = false;
+    //menuItem.isCtrl = false;
     //menuItem.isAlt = false;
     //menuItem.contentPre = "---\n";
     //menuItem.contentPre += "title: \"\"\n";
@@ -36,8 +36,8 @@ function GetFullMenuVar() {
     menuItem.label = "URL";
     menuItem.key = 85; 
     menuItem.keyName = "U";
-    menuItem.isShift = true;
-    menuItem.isCtrl = true;
+    menuItem.isShift = false;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
     menuItem.contentPre = " [alt text](http://) ";
     menuItem.contentPost = "";
@@ -47,8 +47,8 @@ function GetFullMenuVar() {
     menuItem.label = "Email";
     menuItem.key = 69; 
     menuItem.keyName = "E";
-    menuItem.isShift = true;
-    menuItem.isCtrl = true;
+    menuItem.isShift = false;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
     menuItem.contentPre = " [alt text](mailto:) \n";
     menuItem.contentPost = "";
@@ -60,7 +60,7 @@ function GetFullMenuVar() {
     menuItem.keyName = "C";
     menuItem.isShift = false;
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.contentPre = " ![alt tag](filename) ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -71,7 +71,7 @@ function GetFullMenuVar() {
     menuItem.keyName = "1";
     menuItem.isShift = false;
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.contentPre = "\n# ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -82,7 +82,7 @@ function GetFullMenuVar() {
     menuItem.keyName = "2";
     menuItem.isShift = false;
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.contentPre = "\n## ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -93,7 +93,7 @@ function GetFullMenuVar() {
     menuItem.keyName = "3";
     menuItem.isShift = false;
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.contentPre = "\n### ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -104,7 +104,7 @@ function GetFullMenuVar() {
     menuItem.keyName = "4";
     menuItem.isShift = false;
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.contentPre = "\n#### ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -115,7 +115,7 @@ function GetFullMenuVar() {
     menuItem.keyName = "5";
     menuItem.isShift = false;
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.contentPre = "\n##### ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -126,7 +126,7 @@ function GetFullMenuVar() {
     menuItem.keyName = "6";
     menuItem.isShift = false;
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.contentPre = "\n###### ";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -140,8 +140,8 @@ function GetFullMenuVar() {
     menuHeading.key = 70; 
     menuHeading.keyName = "F";
     menuHeading.isShift = false;
-    menuHeading.isCtrl = true;
-    menuHeading.isAlt = true;
+    menuHeading.isCtrl = false;
+    menuHeading.isAlt = false;
     menuHeading.items = [];
 
     menuItem = {};
@@ -168,10 +168,10 @@ function GetFullMenuVar() {
 
     menuItem = {};
     menuItem.label = "Code";
-    menuItem.key = 192; 
-    menuItem.keyName = "`<span class='sr-only'>tilde</span>";
+    menuItem.key = 67; 
+    menuItem.keyName = "C";
     menuItem.isCtrl = true;
-    menuItem.isAlt = false;
+    menuItem.isAlt = true;
     menuItem.isShift = false;
     menuItem.contentPre = "`";
     menuItem.contentPost = "`";
@@ -179,9 +179,9 @@ function GetFullMenuVar() {
 
     menuItem = {};
     menuItem.label = "Maths Mode";
-    menuItem.key = 192; 
-    menuItem.keyName = "4";
-    menuItem.isCtrl = true;
+    menuItem.key = 77; 
+    menuItem.keyName = "M";
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
     menuItem.isShift = false;
     menuItem.contentPre = "$";
@@ -189,22 +189,11 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
-    menuItem.label = "Round Brackets";
-    menuItem.key = 57; 
-    menuItem.keyName = "(<span class='sr-only'>open parenthesis</span>";
-    menuItem.isCtrl = false;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
-    menuItem.contentPre = "(";
-    menuItem.contentPost = ")";
-    menuHeading.items.push(menuItem);
-
-    menuItem = {};
     menuItem.label = "Square Brackets";
     menuItem.key = 219; 
     menuItem.keyName = "[<span class='sr-only'>open square bracket</span>";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = false;
     menuItem.contentPre = "[";
     menuItem.contentPost = "]";
@@ -215,7 +204,7 @@ function GetFullMenuVar() {
     menuItem.key = 219; 
     menuItem.keyName = "{<span class='sr-only'>open curly bracket</span>";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "{";
     menuItem.contentPost = "}";
@@ -226,32 +215,10 @@ function GetFullMenuVar() {
     menuItem.key = 48; 
     menuItem.keyName = ")<span class='sr-only'>close parenthesis</span>";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
+    menuItem.isAlt = false;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\left(";
     menuItem.contentPost = "\\right)";
-    menuHeading.items.push(menuItem);
-
-    menuItem = {};
-    menuItem.label = "Square Brackets";
-    menuItem.key = 219; 
-    menuItem.keyName = "]<span class='sr-only'>close square bracket</span>";
-    menuItem.isCtrl = false;
-    menuItem.isAlt = true;
-    menuItem.isShift = false;
-    menuItem.contentPre = "\\left[";
-    menuItem.contentPost = "\\right]";
-    menuHeading.items.push(menuItem);
-
-    menuItem = {};
-    menuItem.label = "Curly Brackets";
-    menuItem.key = 219; 
-    menuItem.keyName = "}<span class='sr-only'>close curly bracket</span>";
-    menuItem.isCtrl = false;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
-    menuItem.contentPre = "\\left{";
-    menuItem.contentPost = "\\right}";
     menuHeading.items.push(menuItem);
 
     allMenus.push(menuHeading);
@@ -263,17 +230,17 @@ function GetFullMenuVar() {
     menuHeading.key = 89; 
     menuHeading.keyName = "Y";
     menuHeading.isShift = false;
-    menuHeading.isCtrl = true;
-    menuHeading.isAlt = true;
+    menuHeading.isCtrl = false;
+    menuHeading.isAlt = false;
     menuHeading.items = [];
 
     menuItem = {};
     menuItem.label = "Infinity";
     menuItem.key = 68; 
     menuItem.keyName = "D";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\infty{}";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -283,9 +250,9 @@ function GetFullMenuVar() {
     menuItem.key = 56; 
     menuItem.key2 = 106; 
     menuItem.keyName = "*";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\times{}";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -294,9 +261,9 @@ function GetFullMenuVar() {
     menuItem.label = "Partial Derivative";
     menuItem.key = 68; 
     menuItem.keyName = "D";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\partial{}";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -305,9 +272,9 @@ function GetFullMenuVar() {
     menuItem.label = "Plus or Minus";
     menuItem.key = 187; 
     menuItem.keyName = "=";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\pm";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -317,9 +284,9 @@ function GetFullMenuVar() {
     menuItem.key = 189; 
     menuItem.key2 = 109; 
     menuItem.keyName = "-<span class='sr-only'>minus</span>";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\mp";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -328,9 +295,9 @@ function GetFullMenuVar() {
     menuItem.label = "Less Than or Equal";
     menuItem.key = 188; 
     menuItem.keyName = "<";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\leq";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -339,9 +306,9 @@ function GetFullMenuVar() {
     menuItem.label = "Greater Than or Equal";
     menuItem.key = 190; 
     menuItem.keyName = ">";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\geq";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -350,7 +317,7 @@ function GetFullMenuVar() {
     menuItem.label = "Not Equal";
     menuItem.key = 49; 
     menuItem.keyName = "!<span class='sr-only'>exclamation point</span>";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\ne";
@@ -361,9 +328,9 @@ function GetFullMenuVar() {
     menuItem.label = "Left Parenthesis";
     menuItem.key = 57; 
     menuItem.keyName = "(<span class='sr-only'>open parenthesis</span>";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\left(";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -372,9 +339,9 @@ function GetFullMenuVar() {
     menuItem.label = "Right Parenthesis";
     menuItem.key = 48; 
     menuItem.keyName = ")<span class='sr-only'>close parenthesis</span>";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\right)";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -383,8 +350,8 @@ function GetFullMenuVar() {
     menuItem.label = "Left Square Bracket";
     menuItem.key = 219; 
     menuItem.keyName = "[<span class='sr-only'>open square bracket</span>";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
     menuItem.isShift = false;
     menuItem.contentPre = "\\left[";
     menuItem.contentPost = "";
@@ -394,8 +361,8 @@ function GetFullMenuVar() {
     menuItem.label = "Right Square Bracket";
     menuItem.key = 221; 
     menuItem.keyName = "]<span class='sr-only'>close square bracket</span>";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
     menuItem.isShift = false;
     menuItem.contentPre = "\\right]";
     menuItem.contentPost = "";
@@ -405,8 +372,8 @@ function GetFullMenuVar() {
     menuItem.label = "Left Curly Bracket";
     menuItem.key = 219; 
     menuItem.keyName = "{<span class='sr-only'>open curly bracket</span>";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
     menuItem.isShift = true;
     menuItem.contentPre = "\\left{";
     menuItem.contentPost = "";
@@ -416,8 +383,8 @@ function GetFullMenuVar() {
     menuItem.label = "Right Curly Bracket";
     menuItem.key = 221; 
     menuItem.keyName = "}<span class='sr-only'>close curly bracket</span>";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
     menuItem.isShift = true;
     menuItem.contentPre = "\\right}";
     menuItem.contentPost = "";
@@ -432,17 +399,17 @@ function GetFullMenuVar() {
     menuHeading.key = 84; 
     menuHeading.keyName = "T";
     menuHeading.isShift = false;
-    menuHeading.isCtrl = true;
-    menuHeading.isAlt = true;
+    menuHeading.isCtrl = false;
+    menuHeading.isAlt = false;
     menuHeading.items = [];
 
     menuItem = {};
     menuItem.label = "Square Root";
     menuItem.key = 82; 
     menuItem.keyName = "R";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = false;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\sqrt{}";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -451,9 +418,9 @@ function GetFullMenuVar() {
     menuItem.label = "Bar";
     menuItem.key = 66; 
     menuItem.keyName = "B";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\bar{}";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -462,9 +429,9 @@ function GetFullMenuVar() {
     menuItem.label = "Absolute Value";
     menuItem.key = 65; 
     menuItem.keyName = "A";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\left|\\right|";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -474,9 +441,9 @@ function GetFullMenuVar() {
     menuItem.key = 191; 
     menuItem.key2 = 111; 
     menuItem.keyName = "/";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = false;
-    menuItem.isShift = true;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\frac{ num }{ den }";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -485,9 +452,9 @@ function GetFullMenuVar() {
     menuItem.label = "Summation";
     menuItem.key = 83; 
     menuItem.keyName = "S";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = false;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\sum_{ lower }^{ upper }{ what }";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -507,9 +474,9 @@ function GetFullMenuVar() {
     menuItem.label = "Product";
     menuItem.key = 80; 
     menuItem.keyName = "P";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = false;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\prod_{ lower }^{ upper }{ what }";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -518,9 +485,9 @@ function GetFullMenuVar() {
     menuItem.label = "Limit";
     menuItem.key = 76; 
     menuItem.keyName = "L";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = false;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\lim_{ what \\to where }{is}";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -529,7 +496,7 @@ function GetFullMenuVar() {
     menuItem.label = "Double Summation";
     menuItem.key = 68; 
     menuItem.keyName = "D";
-    menuItem.isCtrl = true;
+    menuItem.isCtrl = false;
     menuItem.isAlt = true;
     menuItem.isShift = true;
     menuItem.contentPre = "\\sum_{ lower }^{ upper }{\\sum_{ lower }^{ upper }{ what }}";
@@ -540,9 +507,9 @@ function GetFullMenuVar() {
     menuItem.label = "Double Integral";
     menuItem.key = 78; 
     menuItem.keyName = "N";
-    menuItem.isCtrl = true;
-    menuItem.isAlt = true;
-    menuItem.isShift = true;
+    menuItem.isCtrl = false;
+    menuItem.isAlt = false;
+    menuItem.isShift = false;
     menuItem.contentPre = "\\int_{ lower }^{ upper }{\\int_{ lower }^{ upper }{ what }}";
     menuItem.contentPost = "";
     menuHeading.items.push(menuItem);
@@ -555,9 +522,9 @@ function GetFullMenuVar() {
     menuHeading.label = "Greek Letters";
     menuHeading.key = 71; 
     menuHeading.keyName = "G";
-    menuHeading.isShift = false;
-    menuHeading.isCtrl = true;
-    menuHeading.isAlt = true;
+    menuHeading.isShift = true;
+    menuHeading.isCtrl = false;
+    menuHeading.isAlt = false;
     menuHeading.items = [];
 
     menuItem = {};
@@ -565,7 +532,7 @@ function GetFullMenuVar() {
     menuItem.key = 65; 
     menuItem.keyName = "A";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\alpha{}";
     menuItem.contentPost = "";
@@ -576,7 +543,7 @@ function GetFullMenuVar() {
     menuItem.key = 66; 
     menuItem.keyName = "B";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\beta{}";
     menuItem.contentPost = "";
@@ -587,7 +554,7 @@ function GetFullMenuVar() {
     menuItem.key = 71; 
     menuItem.keyName = "G";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\gamma{}";
     menuItem.contentPost = "";
@@ -598,7 +565,7 @@ function GetFullMenuVar() {
     menuItem.key = 68; 
     menuItem.keyName = "D";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\delta{}";
     menuItem.contentPost = "";
@@ -609,7 +576,7 @@ function GetFullMenuVar() {
     menuItem.key = 69; 
     menuItem.keyName = "E";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\epsilon{}";
     menuItem.contentPost = "";
@@ -620,7 +587,7 @@ function GetFullMenuVar() {
     menuItem.key = 86; 
     menuItem.keyName = "V";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\varepsilon{}";
     menuItem.contentPost = "";
@@ -631,7 +598,7 @@ function GetFullMenuVar() {
     menuItem.key = 90; 
     menuItem.keyName = "Z";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\zeta{}";
     menuItem.contentPost = "";
@@ -642,7 +609,7 @@ function GetFullMenuVar() {
     menuItem.key = 87; 
     menuItem.keyName = "W";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\eta{}";
     menuItem.contentPost = "";
@@ -653,7 +620,7 @@ function GetFullMenuVar() {
     menuItem.key = 72; 
     menuItem.keyName = "H";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\theta{}";
     menuItem.contentPost = "";
@@ -664,7 +631,7 @@ function GetFullMenuVar() {
     menuItem.key = 191; 
     menuItem.keyName = "/";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\vartheta{}";
     menuItem.contentPost = "";
@@ -675,7 +642,7 @@ function GetFullMenuVar() {
     menuItem.key = 73; 
     menuItem.keyName = "I";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\iota{}";
     menuItem.contentPost = "";
@@ -686,7 +653,7 @@ function GetFullMenuVar() {
     menuItem.key = 75; 
     menuItem.keyName = "K";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\kappa{}";
     menuItem.contentPost = "";
@@ -697,7 +664,7 @@ function GetFullMenuVar() {
     menuItem.key = 76; 
     menuItem.keyName = "L";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\lambda{}";
     menuItem.contentPost = "";
@@ -708,7 +675,7 @@ function GetFullMenuVar() {
     menuItem.key = 77; 
     menuItem.keyName = "M";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\mu{}";
     menuItem.contentPost = "";
@@ -719,7 +686,7 @@ function GetFullMenuVar() {
     menuItem.key = 78; 
     menuItem.keyName = "N";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\nu{}";
     menuItem.contentPost = "";
@@ -730,7 +697,7 @@ function GetFullMenuVar() {
     menuItem.key = 88; 
     menuItem.keyName = "X";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\xi{}";
     menuItem.contentPost = "";
@@ -741,7 +708,7 @@ function GetFullMenuVar() {
     menuItem.key = 79; 
     menuItem.keyName = "O";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\omicron{}";
     menuItem.contentPost = "";
@@ -752,7 +719,7 @@ function GetFullMenuVar() {
     menuItem.key = 80; 
     menuItem.keyName = "P";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\pi{}";
     menuItem.contentPost = "";
@@ -763,7 +730,7 @@ function GetFullMenuVar() {
     menuItem.key = 82; 
     menuItem.keyName = "R";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\rho{}";
     menuItem.contentPost = "";
@@ -774,7 +741,7 @@ function GetFullMenuVar() {
     menuItem.key = 83; 
     menuItem.keyName = "S";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\sigma{}";
     menuItem.contentPost = "";
@@ -785,7 +752,7 @@ function GetFullMenuVar() {
     menuItem.key = 84; 
     menuItem.keyName = "T";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\tau{}";
     menuItem.contentPost = "";
@@ -796,7 +763,7 @@ function GetFullMenuVar() {
     menuItem.key = 85; 
     menuItem.keyName = "U";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\upsilon{}";
     menuItem.contentPost = "";
@@ -807,7 +774,7 @@ function GetFullMenuVar() {
     menuItem.key = 70; 
     menuItem.keyName = "F";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\phi{}";
     menuItem.contentPost = "";
@@ -818,7 +785,7 @@ function GetFullMenuVar() {
     menuItem.key = 67; 
     menuItem.keyName = "C";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\chi{}";
     menuItem.contentPost = "";
@@ -829,7 +796,7 @@ function GetFullMenuVar() {
     menuItem.key = 89; 
     menuItem.keyName = "Y";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\psi{}";
     menuItem.contentPost = "";
@@ -840,7 +807,7 @@ function GetFullMenuVar() {
     menuItem.key = 190; 
     menuItem.keyName = ".";
     menuItem.isCtrl = false;
-    menuItem.isAlt = true;
+    menuItem.isAlt = false;
     menuItem.isShift = true;
     menuItem.contentPre = "\\omega{}";
     menuItem.contentPost = "";

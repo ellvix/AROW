@@ -16,19 +16,21 @@ $(document).ready(function() {
 // global vars AHAHAHAHAHA TRY AND STOP ME
 var bibFiles = {};
 var cookieStorage = {};
+var isModKeyDown = false;
 
 function Init() {
     // create edit menu based on stuff we have here
     CreateMenu();
-    SetDefaults();
 
     // var setup
     bibFiles = [];
     cookieStorage.simples = [];
     cookieStorage.files = [];
     cookieStorage.headers = [];
-    cookieStorage.settings = [];
-    cookieStorage.settings = [];
+    cookieStorage.settings = {};
+
+    // defaults
+    SetDefaults();
 
     // cookie restore
     LoadFromCookies();
@@ -90,11 +92,6 @@ function SetEvents() {
         $('#cant_submit_modal').modal('show');
     });
 
-    // modifier
-    $(document).on('click', '#change_mod_key', function() {
-        StartChangeModKey();
-    });
-
     // go to search box: alt + /
     $(document).on('keydown', 'body', function(e) {
         if ( ( e.keyCode == 191 && e.altKey ) ) {
@@ -142,7 +139,13 @@ function SetEvents() {
 
     });
 
+    $(document).on('click', '#reset_page', function() {
+        ClearCookies();
+        window.location.reload();
+    });
+
     // go to edit menu
+    // todo: fix this to work with the new controls, and put it with the other rmd_text event stuff?
     $(document).on('keyup', 'body', function(e) {
         // triggers for menu all start with alt ctrl, so 
         // AND YES I KNOW IT WOULD BE BETTER TO WRITE THIS TO PULL FROM THE CLASS.
@@ -161,13 +164,27 @@ function SetEvents() {
     // edit menu events
     // run from key binding
     $(document).on('keydown', '#rmd_text', function(e) {
-        // all edit events MUST start with ctrl or alt, so, 
-        // exceptions first
-        if ( e.shiftKey && e.ctrlKey && ! e.altKey && e.keyCode == 67 ) {
-            InitReferenceInsert();
+        // note: alt + / (search) handled elsewhere
+        // modKey
+        if ( e.ctrlKey && e.keyCode == 192 && ! isModKeyDown ) {
+            //console.log('mod down');
+            isModKeyDown = true;
+            e.preventDefault();
+        } else if ( isModKeyDown && e.keyCode != 192 ) {
+            e.preventDefault();
+            // exceptions first
+            if ( e.shiftKey && e.ctrlKey && ! e.ctrlKey && e.keyCode == 67 ) {
+                InitReferenceInsert();
+            }
+            else {
+                RunEditFromKey(e);
+            }
         }
-        else if ( e.ctrlKey || e.altKey ) {
-            RunEditFromKey(e);
+    });
+    $(document).on('keyup', '#rmd_text', function(e) {
+        if ( e.ctrlKey && e.keyCode == 192 && isModKeyDown ) {
+            isModKeyDown = false;
+            e.preventDefault();
         }
     });
 
@@ -180,7 +197,7 @@ function SetEvents() {
             $(this).next('.dropdown-menu').attr('aria-expanded', 'true');
         }
 
-        // bug: this event will only fire once, no idea why atm
+        // todo / bug: this event will only fire once, no idea why atm
     });
 
     // bibtex events
@@ -241,7 +258,7 @@ function SetEvents() {
 function SetDefaults() {
     // date field in custom header area
     // todo
-    
+    cookieStorage.settings.mod_key = Number($('#mod_key').val());
 }
 
 function LoadFromCookies() {
@@ -250,10 +267,11 @@ function LoadFromCookies() {
         cookieStorage = c_tmp;
 
         // modKey
-        if ( cookieStorage.modKey != null ) {
-            var modKey = cookieStorage.modKey;
+        if ( cookieStorage.settings.mod_key != null ) {
+            var modKey = cookieStorage.settings.mod_key;
+            var modName = cookieStorage.settings.mod_key_current_name;
             $('#mod_key').val(modKey);
-            $('#mod_key_current_name').html(String.fromCharCode(modKey));
+            $('#mod_key_current_name').html(modName);
         }
 
         // simple inputs
@@ -319,7 +337,6 @@ function LoadFromCookies() {
                 i++;
             }
         });
-
     }
 }
 
@@ -352,9 +369,16 @@ function SaveInputToCookie(sender) {
         // do nothing. We handle this in the post file area
     } else if ( id == "mod_key" ) {
         var modKey = Number($('#mod_key').val());
+
         thisCookie.val = modKey;
-        thisCookie.type = "setting"
-        set = "modKey";
+        thisCookie.index = id;
+        set = "settings";
+    } else if ( id == "mod_key_current_name" ) {
+        var modName = $('#mod_key_current_name').html();
+
+        thisCookie.val = modName;
+        thisCookie.index = id;
+        set = "settings";
     } else {
         // custom header
 
@@ -369,8 +393,8 @@ function SaveInputToCookie(sender) {
         // delete the old version of this cookie
         DeleteThisCookieOld(thisCookie);
 
-        if ( thisCookie.type == "setting" ) {
-            cookieStorage[set] = thisCookie.val;
+        if ( set == "settings" ) {
+            cookieStorage[set][thisCookie.index] = thisCookie.val;
         } else if ( thisCookie.val.length < 1 ) {
             // blank? don't add it back
         } else if ( typeof(thisCookie.index) != "undefined" ) {
@@ -422,17 +446,17 @@ function StartChangeModKey() {
             $('#change_mod_key').html('Choose a key now (<span id="mod_key_countdown">' + currentTimer + '</span>)');
 
             if ( currentTimer <= 0 ) {
-                ClearChangeModKey(interval, null)
+                UpdateChangeModkeyButton(interval, null)
             }
         }, currentTimer * 100);
 
         $(document).on('keydown', 'body', function(e) {
             // todo: pick key!
-            ClearChangeModKey(interval, e);
+            UpdateChangeModkeyButton(interval, e);
         });
     }
 }
-function ClearChangeModKey(interval, e) {
+function UpdateChangeModkeyButton(interval, e) {
     clearInterval(interval);
     $(document).off('keydown', 'body');
     $('#change_mod_key').html('Change Modifier Key');
@@ -442,6 +466,7 @@ function ClearChangeModKey(interval, e) {
         $('#mod_key_current_name').html(e.key);
 
         SaveInputToCookie($('#mod_key')[0]);
+        SaveInputToCookie($('#mod_key_current_name')[0]);
     }
 }
 
@@ -478,7 +503,8 @@ function RunEditFromKey(e) {
         var numItems = allMenus[k].items.length;
         for ( var i = 0 ; i < numItems ; i++ ) {
             var thisItem = allMenus[k].items[i];
-            if ( thisItem.isCtrl == e.ctrlKey && thisItem.isAlt == e.altKey && thisItem.isShift == e.shiftKey ) {
+            //if ( thisItem.isCtrl == e.ctrlKey && thisItem.isAlt == e.altKey && thisItem.isShift == e.shiftKey ) { // they all have alt now
+            if ( thisItem.isAlt == e.altKey && thisItem.isShift == e.shiftKey ) {
                 if ( thisItem.key == e.keyCode) {
                     // got a match, run the edit
                     EditText(thisItem)

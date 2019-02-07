@@ -76,12 +76,13 @@
                 <div>
                     <div>
                         <textarea id="rmd_text"># Here's a heading
-**this is some bold text**
-Here's some R code:
+**this is some bold text.**
+This is some normal text.
+## Here's some R code:
 ```{r}
 Sys.time()
 ```
-                        </textarea>
+</textarea>
                     </div>
                 </div>
 
@@ -100,8 +101,8 @@ Sys.time()
 
                     <div>
                         <h3>Modifier Key</h3>
-                        <p>Shortcuts are done holding the modifier key and pressing the relevant shortcut. Modifier is currently <span id="mod_key_current_name">Tilde</span>. <button class="btn btn-default ml-2" id="change_mod_key">Change Modifier Key</button></p>
-                        <input type="hidden" id="mod_key" value="192" />
+                        <p>Shortcuts are done holding the modifier key and pressing Alt + ` (grave).</p>
+                        <input type="hidden" id="mod_key" value="36" />
                     </div>
 
                     <div>
@@ -135,6 +136,9 @@ Sys.time()
                         <div id="cust_header_new_wrapper" class="text-center margin_bottom">
                             <button class="btn btn-success" id="cust_header_new_trigger">New Custom Header<i class="margin_left oi oi-plus" aria-hidden="true"></i></button>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-default" id="reset_page">Reset Page</button>
                     </div>
                     <div>
                         <h3>BibTeX Citations</h3>
