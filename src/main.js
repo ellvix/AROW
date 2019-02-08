@@ -187,6 +187,31 @@ function SetEvents() {
             e.preventDefault();
         }
     });
+    // from any menu, esc brings back to main textarea, LR goes to next prev menu
+    $(document).on('keydown', '#edit_menu button', function(e) {
+        if ( e.keyCode == 27 ) { // esc
+            console.log('we try and focus');
+            setTimeout(function() { 
+                // we wrap this in a delay, as otherwise it's caught by the default behavior, and just closes 1 level of menu, and I don't feel like overriding default bootstrap
+                $('#rmd_text').focus(); 
+            }, 100);
+        } else if ( e.keyCode == 37 || e.keyCode == 39 ) { // L R
+            currentSet = $('.menu_top');
+            if ( $(this).hasClass('menu_top') ) {
+                currentIndex = currentSet.index(this);
+            } else {
+                currentIndex = currentSet.index($(this).parent().parent().find('button.menu_top')[0]);
+            }
+
+            if ( e.keyCode == 37 && currentIndex != 0 ) {
+                //$(currentSet[currentIndex-1]).focus();
+                $(currentSet[currentIndex-1]).trigger('click');
+            } else if ( e.keyCode == 39 && currentIndex > 0 ) {
+                //$(currentSet[currentIndex+1]).focus();
+                $(currentSet[currentIndex+1]).trigger('click');
+            }
+        }
+    });
 
     // bootstrap dropdown menu aria
     $(document).on('click', '.dropdown-toggle', function() {
@@ -715,7 +740,7 @@ function CreateMenu() {
         var menuItems = menu.items;
 
         menuHtml += '<div class="inline btn-group">\n';
-        menuHtml += '<button class="btn btn-secondary dropdown-toggle" type="button" id="' + menuId + '_label" aria-controls="' + menuId + '_wrapper" aria-haspopup="true" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
+        menuHtml += '<button class="btn btn-secondary dropdown-toggle menu_top" type="button" id="' + menuId + '_label" aria-controls="' + menuId + '_wrapper" aria-haspopup="true" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
         if ( typeof(allMenus[k].key) != "undefined" ) {
             menuHtml += '<span class="sr-only"> (';
             if ( menu.isCtrl ) {
