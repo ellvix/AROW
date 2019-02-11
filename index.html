@@ -93,6 +93,7 @@ Sys.time()
                     <div class="col-sm-2"><label for="choice_docx">docx</label><input type="checkbox" class="format_choice margin_lr" id="choice_docx"></div>
                     <div class="col-sm-2"><label for="choice_pdf">pdf</label><input type="checkbox" class="format_choice margin_lr" id="choice_pdf"></div>
                     <!--<div class="col-sm-2"><label for="choice_pptx">pptx</label><input type="checkbox" class="format_choice margin_lr" id="choice_pptx"></div>//-->
+                    <div class="col-sm-2"><label for="choice_custom">custom</label><input type="checkbox" class="format_choice margin_lr" id="choice_custom"></div>
                 </div>
 
                 <p class="text-center"><button class="btn btn-default" id="advanced_options_trigger" aria-expanded="false" aria-controls="advanced_options_wrapper">Show Advanced Options</button></p>
@@ -106,36 +107,15 @@ Sys.time()
                     </div>
 
                     <div>
-                        <h3>Custom Headers</h3>
-                        <p>Add any header information you want here. Some defaults are provided to give you the idea</p>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_0" class="form-control header_key" placeholder="Label" value="title"></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_0" class="margin_lr form-control header_val" aria-label="Header Text" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_1" class="form-control header_key" placeholder="Label" value="author"></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_1" class="margin_lr form-control header_val" aria-label="Header Text" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_2" class="form-control header_key" placeholder="Label" value="date"></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_2" class="margin_lr form-control header_val" aria-label="Header Text" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div class="margin_bottom row cust_header_row">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" id="cust_header_key_3" class="form-control header_key" placeholder="Label" value=""></div>
-                            <div class="col-md-9"><input type="text" id="cust_header_val_3" class="margin_lr form-control header_val" aria-label="Header Text" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div id="cust_header_template" class="margin_bottom row hidden">
-                            <div class="col-md-2"><input type="text" aria-label="Header Label" class="form-control header_key" placeholder="Label" value=""></div>
-                            <div class="col-md-9"><input type="text" class="margin_lr form-control header_val" aria-label="Header Text" placeholder="Text" value=""></div>
-                            <div class="col-md-1"><button class="btn btn-secondary cust_header_del_trigger"><i title="Delete" class="oi oi-trash" aria-hidden="true"></i><span class="sr-only">Delete this header</span></div>
-                        </div>
-                        <div id="cust_header_new_wrapper" class="text-center margin_bottom">
-                            <button class="btn btn-success" id="cust_header_new_trigger">New Custom Header<i class="margin_left oi oi-plus" aria-hidden="true"></i></button>
-                        </div>
+                        <h3 id="custom_yaml_label">Custom Header YAML</h3>
+                        <p>Add your custom YAML here. More information on YAML can be found on the <a href="https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html" target="_blank">Ansible YAML syntax page</a>. Also note that if you want to add output changes, check the custom file type box above.</p>
+                        <p><textarea id="custom_yaml" aria-labelledby="custom_yaml_label">
+---
+title: ""
+author: ""
+date: ""
+---
+</textarea>
                     </div>
                     <div class="mb-3">
                         <button class="btn btn-default" id="reset_page">Reset Page</button>

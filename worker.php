@@ -9,13 +9,14 @@ include "getnewid.php";
 
 // control vars
 $sysMsg = "";
-$testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$errorMsg = "";
+$createdFileNames = "";
+$testingLevel = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
 $platform = "xampp"; // aws, xampp (local)
 
 // reporting
 error_reporting(E_ALL & ~E_NOTICE);
-$errorMsg = "";
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
     //throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
     $errorMsg .= "<p>Error ($errline) $errstr</p>\n";
@@ -104,6 +105,9 @@ if ( $haveData && $isDirSet ) {
             }
             $args .= "\"" . dirname(__FILE__) . $argLocalPath; // the file path + name
             $args .= " id=\"$id\"";
+            if ( strlen($fileFormatsInput) > 0 ) {
+                $args .= " formats=\"$fileFormatsInput\"";
+            }
 
             $rScript = "C:\\Program Files\\R\\R-3.5.0\\bin\\Rscript.exe"; // xampp localhost default
             $rFile = "C:\\xampp\\htdocs\\AROW\\R\\RMDrender.R";
@@ -124,7 +128,15 @@ if ( $haveData && $isDirSet ) {
                 if ( $testingLevel > 1 ) {
                     $sysMsg .= "<h3>Output from R</h3>\n";
                     $sysMsg .= "<div>" . print_r($output, true) . "</div>\n";
-                }
+                } 
+
+                //$sysMsg .= "<div>" . serialize($output) . "</div>\n";
+
+
+                // get all files that were created
+                $pattern = '/\/output\/\d+\/([^"]+)"/';
+                preg_match_all($pattern, serialize($output), $createdFileNames);
+                //$sysMsg .= "<p>createdFileNames:  " . print_r(implode(',',$createdFileNames), true) . "</p>\n";
             } else {
                 $sysMsg .= "<h3>R failed to run.</h3>\n";
                 $sysMsg .= "<div>" . print_r($output, true) . "</div>\n";
@@ -138,23 +150,6 @@ if ( $haveData && $isDirSet ) {
 if ( $testingLevel > 1 ) {
     $sysMsg .= "<p>Processing complete. $fileFormats</p>\n";
 }
-
-// check if the files were created (or later, return errors from R)
-$createdFileNames = "";
-foreach ( $fileFormats as $thisFormat) {
-    if ( $testingLevel > 1 ) {
-        $sysMsg .= "<p>looking for $thisFormat files</p>\n";
-    }
-    $fullFileName = "./output/$id/$fileName.$thisFormat";
-    if ( file_exists($fullFileName)) {
-        $createdFileNames .= " " . $fullFileName;
-    } else {
-        if ( $testingLevel > 1 ) {
-            $sysMsg .= "<p>File [$fullFileName] DNE</p>\n";
-        }
-    }
-}
-$createdFileNames = trim($createdFileNames);
 
 $outputData = array("error" => $errorMsg, "ID" => $id, "created_filenames" => $createdFileNames, "message" => $sysMsg);
 echo json_encode($outputData);

@@ -630,12 +630,14 @@ function SubmitData() {
     data.rmd_name = $('#rmd_name').val();
     data.rmd_text = headerHtml + $('#rmd_text').val();
     data.formats = "";
-    $('.format_choice').each(function() {
-        if ( $(this).prop('checked') ) {
-            data.formats += " " + $(this).attr('id').substr(7);
-        }
-        data.formats = data.formats.trim();
-    });
+    if ( ! $('#choice_custom').prop('checked') ) { // only take formats if custom is not checked
+        $('.format_choice').each(function() {
+            if ( $(this).prop('checked') ) {
+                data.formats += " " + $(this).attr('id').substr(7);
+            }
+            data.formats = data.formats.trim();
+        });
+    }
 
     // send
     DisplayMessage("Processing...");
@@ -649,7 +651,6 @@ function SubmitData() {
             if ( err.toString() == "" ) {
                 // success
                 DisplaySuccess(response);
-
             } else {
                 // error string detected
                 DisplayMessage("Processing error");
@@ -660,6 +661,7 @@ function SubmitData() {
 }
 
 function DisplaySuccess(response) { 
+    console.log(response);
     var msg = "";
     var downloadMessage = "";
     var sysMessage = "";
@@ -667,22 +669,19 @@ function DisplaySuccess(response) {
     downloadMessage += "<p>Processing complete.</p>\n";
 
     // display all files that were created
-    var allFileNames = GetAllFileNames();
-    if ( allFileNames.length == 0 ) {
-        downloadMessage += '<p>No files created</p>\n';
-    } else {
-        for ( var i = 0 ; i < allFileNames.length ; i++ ) {
-            // make sure they exist before outputting a link
-            if ( typeof(response.created_filenames) != "undefined" ) {
-                if ( response.created_filenames.indexOf(allFileNames[i]) != -1 ) {
-                    downloadMessage += '<p><a href="output/' + response.ID + "/" + allFileNames[i] + '" target="_blank">Download ' + allFileNames[i] + '</a></p>\n';
-                } else {
-                    console.log("issue finding " + allFileNames[i]);
-                }
+    var haveFiles = false;
+    if ( typeof(response.created_filenames) != "undefined" ) {
+        if ( typeof(response.created_filenames[1]) != "undefined" ) {
+            for ( var i = 0 ; i < response.created_filenames[1].length ; i++ ) {
+                haveFiles = true;
+                downloadMessage += '<p><a href="output/' + response.ID + "/" + response.created_filenames[1][i] + '" target="_blank">Download ' + response.created_filenames[1][i] + '</a></p>\n';
             }
         }
     }
-
+    if ( ! haveFiles ) {
+        downloadMessage += "<p>Issue fetching files (no files created by R)</p>\n";
+    }
+    
     if ( typeof(response.message) != "undefined" ) {
         if ( response.message.length > 0 ) {
             sysMessage += "<div>" + response.message + "</div>\n";
@@ -711,11 +710,16 @@ function GetAllFileNames() {
     var baseName = $('#rmd_name').val();
     var fileNames = [];
 
-    $('.format_choice').each(function() {
-        if ( $(this).prop('checked') ) {
-            fileNames.push(baseName.replace(/ /g, "") + "." + $(this).attr('id').substr(7));
-        }
-    });
+    // filenames: they'll usually come from the type checkboxes, but if 'custom' is checked, then we have to look at the yaml
+    if ( $('#choice_custom').prop('checked') ) {
+        $('.format_choice').each(function() {
+            if ( $(this).prop('checked') ) {
+                fileNames.push(baseName.replace(/ /g, "") + "." + $(this).attr('id').substr(7));
+            }
+        });
+    } else {
+        // bookmark: write some regex (or find a library) to parse the output types from custom yaml
+    }
 
     return fileNames;
 }
