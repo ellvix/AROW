@@ -40,7 +40,7 @@ function Init() {
 function TestingShit() {
 
     // modal work
-    //$('#bibtex_modal').modal('show');
+    $('#bibtex_modal').modal('show');
     //$('#advanced_options_wrapper').removeClass('hidden');
 
     /*
@@ -235,7 +235,7 @@ function SetEvents() {
     $(document).on('click', '.bib_delete', function() {
         BibtexRemoveFile(this);
     });
-    $(document).on('keydown', '#citation_filter', function() {
+    $(document).on('keyup', '#citation_filter', function() {
         FilterCitations();
     });
     $(document).on('click', '#citation_clear_filter', function() {
@@ -268,6 +268,9 @@ function SetEvents() {
             if ( ! cookieStorage.settings.save ) {
                 canSave = false;
             }
+        }
+        if ( $(this).attr('id') == "bibtex_upload_file" ) {
+            canSave = false;
         }
         if ( canSave ) {
             SaveInputToCookie(this);
@@ -338,7 +341,7 @@ function LoadFromCookies() {
                     // proper file, get the text and send reponse data to handler
                     var res = {};
                     res.error = "";
-                    res.ID = el.id;
+                    res.ID = el.id; 
                     res.message = "";
                     res.filePath = el.val;
                     res.uploadType = "cookie";
@@ -717,8 +720,6 @@ function GetAllFileNames() {
                 fileNames.push(baseName.replace(/ /g, "") + "." + $(this).attr('id').substr(7));
             }
         });
-    } else {
-        // bookmark: write some regex (or find a library) to parse the output types from custom yaml
     }
 
     return fileNames;
@@ -858,7 +859,7 @@ function FileUploadHandler() {
         type: 'post', 
         success: function(r) {
             var response = JSON.parse(r);
-            FileUploadFinisher(response);
+            FileUploadFinisher(response, $('#bibtex_upload_file')[0]);
 
             //$('#bib_filename').focus(); // doesn't reliably work
             $('#bibtex_modal').modal('hide');
@@ -881,20 +882,15 @@ function MaybeCreateFileFromTextarea() {
             dataType: 'json',
             type: 'post', 
             success: function(r) {
-                FileUploadFinisher(r);
+                FileUploadFinisher(r, $("#bibtex_textarea")[0]);
             }
         });
     }
 
 }
 
-function FileUploadFinisher(response, _silent) {
+function FileUploadFinisher(response, sender) {
     // on file input change, we add this file to the 'stack' (by which we mean storing its text internally), and update the interface to show the file was loaded (and can be deleted
-
-    // catch errors
-    if ( typeof(_silent) == "undefined" ) {
-        silent = false;
-    }
     if ( typeof(response.error) != 'undefined' ) {
         if ( response.error.length > 0 ) {
             DisplayMessage(response.error, 'error');
@@ -965,10 +961,11 @@ function FileUploadFinisher(response, _silent) {
     if ( thisType != "cookie" ) {
         var thisCookie = {};
         thisCookie.type = thisType;
-        thisCookie.id = bibFiles.length; // a throwaway id. we can't rely on these as they'll be too dynamic
+        thisCookie.id = response.ID;
         thisCookie.val = thisBib.fileName;
         DeleteThisCookieOld(thisCookie);
         cookieStorage.files.push(thisCookie);
+        Cookies.set('rmd_storage', cookieStorage);
     }
 
     // update the UI
@@ -996,6 +993,8 @@ function FileUploadFinisher(response, _silent) {
         $('#bibtex_upload_file').val('');
     }
 
+    // close modal
+    $('#bibtex_modal').modal('hide');
 }
 
 function BibtexRemoveFile(sender) {

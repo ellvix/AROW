@@ -1,6 +1,10 @@
 <?php
-
+if ( session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 // file upload handler for BibTex files
+
+include "getnewid.php";
 
 $errorMsg = "";
 $sysMsg = "";
@@ -13,10 +17,17 @@ $fileContents = "";
 // get folder info
 $isDirSet = false;
 if ( ! isset ( $_SESSION_['folder_id'] ) ) {
-    $isDirSet = GetNewId();
+    $idErr = GetNewId();
+    if ( strlen($idErr) > 0 ) {
+        $errorMsg .= $idErr;
+    } else {
+        $isDirSet = true;
+    }
 }
 if ( ! $isDirSet ) {
-    $errorMsg .= "<p>Error creating new ID.</p>\n";
+    $errorMsg .= "<p>Error creating new id.</p>\n";
+} else if ( $testingLevel > 1 ) {
+    $sysMsg .= "<p>Folder ID: " . $_SESSION['folder_id'] . "</p>\n";
 }
 
 if ( $isDirSet ) {

@@ -8,6 +8,7 @@ if ( session_status() == PHP_SESSION_NONE) {
 
 function GetNewId() {
     $path = "./output";
+    $errorMsg = "";
 
     // get a list of folders
     $folders = [];
