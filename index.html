@@ -99,30 +99,6 @@ Sys.time()
 
                 <p class="text-center"><button class="btn btn-default" id="advanced_options_trigger" aria-expanded="false" aria-controls="advanced_options_wrapper">Show Advanced Options</button></p>
 
-                <div class="form-group hidden" id="advanced_options_wrapper">
-
-                    <div>
-                        <h3 id="custom_yaml_label">Custom Header YAML</h3>
-                        <p>Add your custom YAML here. More information on YAML can be found on the <a href="https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html" target="_blank">Ansible YAML syntax page</a>. Also note that if you want to add output changes, check the custom file type box above.</p>
-                        <p><textarea id="custom_yaml" aria-labelledby="custom_yaml_label">
----
-title: ""
-author: ""
-date: ""
----
-</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <button class="btn btn-default" id="reset_page">Reset Page</button>
-                    </div>
-                    <div>
-                        <h3>BibTeX Citations</h3>
-                        <p>Add a set of BibTeX citations to be able to be used in the main text area.</p>
-                        <p><button type="button" class="btn btn-default" id="bibtex_popup_trigger" data-toggle="modal" data-target="#bibtex_modal">Manage BibTeX</button></p>
-                    </div>
-                    <hr>
-                </div> <!-- end advanced options //-->
-
                 <div class="clearfix"></div>
                 <p class="text-center"><button class="btn btn-primary" id="main_submit">Submit</button></p>
             </div>
@@ -265,6 +241,45 @@ date: ""
                 </div>
             </div>
         </div> <!-- end cant_submit_modal //-->
+        <div class="modal fade" id="advanced_modal" tabindex="-1" role="dialog" aria-labelledby="advanced_title" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="advanced_title">Advanced Options</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group" id="advanced_options_wrapper">
+                            <div>
+                                <h3 id="custom_yaml_label">Custom Header YAML</h3>
+                                <p>Add your custom YAML here. More information on YAML can be found on the <a href="https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html" target="_blank">Ansible YAML syntax page</a>. Also note that if you want to add output changes, check the custom file type box above.</p>
+                                <p><textarea id="custom_yaml" aria-labelledby="custom_yaml_label">
+                                    ---
+                                    title: ""
+                                    author: ""
+                                    date: ""
+                                    ---
+                                </textarea>
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-default" id="reset_page">Reset Page</button>
+                            </div>
+                            <div>
+                                <h3>BibTeX Citations</h3>
+                                <p>Add a set of BibTeX citations to be able to be used in the main text area.</p>
+                                <p><button type="button" class="btn btn-default" id="bibtex_popup_trigger" data-toggle="modal" data-target="#bibtex_modal">Manage BibTeX</button></p>
+                            </div>
+                            <hr>
+                        </div> <!-- end advanced options //-->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end advanced_modal //-->
         <div class="alert text-center cookiealert" role="alert"><!-- START Bootstrap-Cookie-Alert -->
             <b>This website uses cookies to save your work between sessions. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a></b>
             <label for="input_cookie_save" class="mr-2 ml-2">Sure, save my work</label><input type="checkbox" checked id="input_cookie_save">

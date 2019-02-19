@@ -373,7 +373,7 @@ input[type="radio"] {
     padding: .2em 1em;
 }
 
-#bibtex_modal > .modal-dialog {
+#bibtex_modal > .modal-dialog, #advanced_modal > .modal-dialog {
     max-width: 800px;
 }
 

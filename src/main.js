@@ -61,15 +61,7 @@ function SetEvents() {
 
     // custom header triggers
     $(document).on('click', '#advanced_options_trigger', function() {
-        if ( $(this).html() == "Show Advanced Options" ) {
-            $(this).html('Hide Advanced Options');
-            $(this).attr('aria-expanded', "true");
-            $('#advanced_options_wrapper').removeClass('hidden');
-        } else {
-            $(this).html('Show Advanced Options');
-            $(this).attr('aria-expanded', "false");
-            $('#advanced_options_wrapper').addClass('hidden');
-        }
+        $('#advanced_modal').modal('show');
     });
     $(document).on('click', '.cust_header_del_trigger', function() {
         RemoveCustHeader(this);
@@ -205,6 +197,9 @@ function SetEvents() {
     // bibtex events
     $(document).on('change', '#bibtex_upload_file', function() {
         FileUploadHandler();
+    });
+    $(document).on('show.bs.modal', '#bibtex_modal', function() {
+        $('#advanced_modal').modal('hide');
     });
     $(document).on('hide.bs.modal', '#bibtex_modal', function() {
         MaybeCreateFileFromTextarea();
