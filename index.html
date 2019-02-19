@@ -88,24 +88,18 @@ Sys.time()
                 </div>
 
                 <p class="form-group"><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="form-control" value="MyFile"></p>
-                <div class="inline_divs">
+                <div class="inline_divs" id="output_choices">
                     <p>Create which file types?</p>
                     <div class="col-sm-2"><label for="choice_html">html</label><input type="checkbox" class="format_choice margin_lr" id="choice_html" checked></div>
                     <div class="col-sm-2"><label for="choice_docx">docx</label><input type="checkbox" class="format_choice margin_lr" id="choice_docx"></div>
                     <div class="col-sm-2"><label for="choice_pdf">pdf</label><input type="checkbox" class="format_choice margin_lr" id="choice_pdf"></div>
-                    <!--<div class="col-sm-2"><label for="choice_pptx">pptx</label><input type="checkbox" class="format_choice margin_lr" id="choice_pptx"></div>//-->
-                    <div class="col-sm-2"><label for="choice_custom">custom</label><input type="checkbox" class="format_choice margin_lr" id="choice_custom"></div>
+                    <div class="col-sm-2"><label for="choice_pptx">pptx</label><input type="checkbox" class="format_choice margin_lr" id="choice_pptx"></div>
+                    <div class="col-sm-2"><label for="choice_custom">Custom</label><input type="checkbox" class="format_choice margin_lr" id="choice_custom"></div>
                 </div>
 
                 <p class="text-center"><button class="btn btn-default" id="advanced_options_trigger" aria-expanded="false" aria-controls="advanced_options_wrapper">Show Advanced Options</button></p>
 
                 <div class="form-group hidden" id="advanced_options_wrapper">
-
-                    <div>
-                        <h3>Modifier Key</h3>
-                        <p>Shortcuts are done holding the modifier key and pressing Alt + ` (grave).</p>
-                        <input type="hidden" id="mod_key" value="36" />
-                    </div>
 
                     <div>
                         <h3 id="custom_yaml_label">Custom Header YAML</h3>
@@ -133,8 +127,6 @@ date: ""
                 <p class="text-center"><button class="btn btn-primary" id="main_submit">Submit</button></p>
             </div>
 
-            <div id="live_sr" aria-live="polite" class="sr-only">
-            </div>
             <div id="live_visual" aria-hidden="true">
             </div>
             <div id="output">
@@ -145,6 +137,8 @@ date: ""
             <div id="live_sr_search" aria-live="polite" class="sr-only" aria-atomic="true">
             </div>
             <div id="search_storage" class="hidden">
+            </div>
+            <div id="live_sr" aria-live="polite" class="hidden sr-only">
             </div>
 
         </div>

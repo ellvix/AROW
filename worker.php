@@ -13,7 +13,7 @@ $errorMsg = "";
 $createdFileNames = "";
 $testingLevel = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
-$platform = "aws"; // aws, xampp (local)
+$platform = "xampp"; // aws, xampp (local)
 
 // reporting
 error_reporting(E_ALL & ~E_NOTICE);

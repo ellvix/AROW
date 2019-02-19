@@ -16,7 +16,6 @@ $(document).ready(function() {
 // global vars AHAHAHAHAHA TRY AND STOP ME
 var bibFiles = {};
 var cookieStorage = {};
-var isModKeyDown = false;
 
 function Init() {
     // create edit menu based on stuff we have here
@@ -92,6 +91,17 @@ function SetEvents() {
         $('#cant_submit_modal').modal('show');
     });
 
+    // if custom checkbox, clear the others
+    $(document).on('change', '#output_choices input', function() {
+        if ( $(this).prop('checked') ) {
+            if ( $(this).attr('id') == "choice_custom" ) {
+                $('#output_choices input:not(#choice_custom)').prop('checked', false);
+            } else {
+                $('#choice_custom').prop('checked', false);
+            }
+        }
+    });
+
     // go to search box: alt + /
     $(document).on('keydown', 'body', function(e) {
         if ( ( e.keyCode == 191 && e.altKey ) ) {
@@ -144,49 +154,16 @@ function SetEvents() {
         window.location.reload();
     });
 
-    // go to edit menu
-    // todo: fix this to work with the new controls, and put it with the other rmd_text event stuff?
-    $(document).on('keyup', 'body', function(e) {
-        // triggers for menu all start with alt ctrl, so 
-        // AND YES I KNOW IT WOULD BE BETTER TO WRITE THIS TO PULL FROM THE CLASS.
-        if ( e.ctrlKey && e.altKey ) {
-            var allMenus = GetFullMenuVar();
-            for ( var i = 0 ; i < allMenus.length ; i++ ) {
-                if ( allMenus[i].key == e.keyCode ) {
-                    $('#menu_' + i).focus(); 
-                    $('#menu_' + i).dropdown('toggle');
-                }
-            }
-
-        }
-    });
-
     // edit menu events
     // run from key binding
     $(document).on('keydown', '#rmd_text', function(e) {
         // note: alt + / (search) handled elsewhere
-        // modKey
-        if ( e.ctrlKey && e.keyCode == 192 && ! isModKeyDown ) {
-            //console.log('mod down');
-            isModKeyDown = true;
+        if ( e.shiftKey && e.altKey && e.keyCode != 18 && e.keyCode != 18 ) { // alt + shift on, and fires on any 3rd keydown
             e.preventDefault();
-        } else if ( isModKeyDown && e.keyCode != 192 ) {
-            e.preventDefault();
-            // exceptions first
-            if ( e.shiftKey && e.ctrlKey && ! e.ctrlKey && e.keyCode == 67 ) {
-                InitReferenceInsert();
-            }
-            else {
-                RunEditFromKey(e);
-            }
+            GotoMenu(e);
         }
     });
-    $(document).on('keyup', '#rmd_text', function(e) {
-        if ( e.ctrlKey && e.keyCode == 192 && isModKeyDown ) {
-            isModKeyDown = false;
-            e.preventDefault();
-        }
-    });
+
     // from any menu, esc brings back to main textarea, LR goes to next prev menu
     $(document).on('keydown', '#edit_menu button', function(e) {
         if ( e.keyCode == 27 ) { // esc
@@ -286,21 +263,12 @@ function SetEvents() {
 function SetDefaults() {
     // date field in custom header area
     // todo
-    cookieStorage.settings.mod_key = Number($('#mod_key').val());
 }
 
 function LoadFromCookies() {
     var c_tmp = Cookies.getJSON('rmd_storage');
     if ( typeof(c_tmp) != "undefined") {
         cookieStorage = c_tmp;
-
-        // modKey
-        if ( cookieStorage.settings.mod_key != null ) {
-            var modKey = cookieStorage.settings.mod_key;
-            var modName = cookieStorage.settings.mod_key_current_name;
-            $('#mod_key').val(modKey);
-            $('#mod_key_current_name').html(modName);
-        }
 
         // simple inputs
         // just set them
@@ -395,18 +363,6 @@ function SaveInputToCookie(sender) {
         set = "simples"
     } else if ( id == 'bibtex_upload_file' ) {
         // do nothing. We handle this in the post file area
-    } else if ( id == "mod_key" ) {
-        var modKey = Number($('#mod_key').val());
-
-        thisCookie.val = modKey;
-        thisCookie.index = id;
-        set = "settings";
-    } else if ( id == "mod_key_current_name" ) {
-        var modName = $('#mod_key_current_name').html();
-
-        thisCookie.val = modName;
-        thisCookie.index = id;
-        set = "settings";
     } else {
         // custom header
 
@@ -451,7 +407,7 @@ function DeleteThisCookieOld(thisCookie) {
     }
 
     for ( var i = 0 ; i < cookieStorage[set].length ; i++ ) {
-        if ( cookieStorage[set][i].val == thisCookie.val ) {
+        if ( cookieStorage[set][i].id == thisCookie.id ) {
             cookieStorage[set].splice(i, 1);
             break;
         }
@@ -460,42 +416,6 @@ function DeleteThisCookieOld(thisCookie) {
 
 function ClearCookies() {
     Cookies.remove('rmd_storage');
-}
-
-function StartChangeModKey() {
-    if ( $('#change_mod_key').html() == "Change Modifier Key" ) {
-        var countDuration = 10;
-        var currentTimer = countDuration;
-        $('#change_mod_key').html('Choose a key now (<span id="mod_key_countdown">' + currentTimer + '</span>)');
-
-        var interval = setInterval(function() {
-            currentTimer--;
-
-            $('#change_mod_key').html('Choose a key now (<span id="mod_key_countdown">' + currentTimer + '</span>)');
-
-            if ( currentTimer <= 0 ) {
-                UpdateChangeModkeyButton(interval, null)
-            }
-        }, currentTimer * 100);
-
-        $(document).on('keydown', 'body', function(e) {
-            // todo: pick key!
-            UpdateChangeModkeyButton(interval, e);
-        });
-    }
-}
-function UpdateChangeModkeyButton(interval, e) {
-    clearInterval(interval);
-    $(document).off('keydown', 'body');
-    $('#change_mod_key').html('Change Modifier Key');
-
-    if ( e != null ) {
-        $('#mod_key').val(e.keyCode);
-        $('#mod_key_current_name').html(e.key);
-
-        SaveInputToCookie($('#mod_key')[0]);
-        SaveInputToCookie($('#mod_key_current_name')[0]);
-    }
 }
 
 function MaybeDisableSubmit() {
@@ -524,6 +444,17 @@ function MaybeDisableSubmit() {
     }
 }
 
+function GotoMenu(e) {
+    var allMenus = GetFullMenuVar();
+    for ( var i = 0 ; i < allMenus.length ; i++ ) {
+        var thisHeading = allMenus[i];
+
+        if ( thisHeading.key == e.keyCode ) { 
+            $('#menu_' + i + '_label').focus();
+            $('#menu_' + i + '_label').dropdown('toggle');
+        }
+    }
+}
 function RunEditFromKey(e) {
     // look through all current edit options for a key combo match
     var allMenus = GetFullMenuVar();
@@ -531,16 +462,16 @@ function RunEditFromKey(e) {
         var numItems = allMenus[k].items.length;
         for ( var i = 0 ; i < numItems ; i++ ) {
             var thisItem = allMenus[k].items[i];
-            //if ( thisItem.isCtrl == e.ctrlKey && thisItem.isAlt == e.altKey && thisItem.isShift == e.shiftKey ) { // they all have alt now
-            if ( thisItem.isAlt == e.altKey && thisItem.isShift == e.shiftKey ) {
-                if ( thisItem.key == e.keyCode) {
-                    // got a match, run the edit
+
+            if ( thisItem.label = "Citation" ) {
+                InitReferenceInsert();
+            } else if ( thisItem.key == e.keyCode) {
+                // got a match, run the edit
+                EditText(thisItem)
+            } else if ( typeof(thisItem.key2) != "undefined" ) {
+                if ( thisItem.key2 == e.keyCode ) {
+                    // this one has an alt key, and there's a match. Run the edit
                     EditText(thisItem)
-                } else if ( typeof(thisItem.key2) != "undefined" ) {
-                    if ( thisItem.key2 == e.keyCode ) {
-                        // this one has an alt key, and there's a match. Run the edit
-                        EditText(thisItem)
-                    }
                 }
             }
         }
@@ -664,12 +595,12 @@ function SubmitData() {
 }
 
 function DisplaySuccess(response) { 
-    console.log(response);
     var msg = "";
     var downloadMessage = "";
     var sysMessage = "";
 
     downloadMessage += "<p>Processing complete.</p>\n";
+    msg += downloadMessage;
 
     // display all files that were created
     var haveFiles = false;
@@ -702,7 +633,6 @@ function DisplaySuccess(response) {
     DisplayMessage(downloadMessage, "output")
     if ( msg.length > 0 ) {
         DisplayMessage(msg, "live_sr")
-        DisplayMessage(msg, "live_visual")
     }
     if ( sysMessage.length > 0 ) {
         DisplayMessage(sysMessage, "system_message")
@@ -747,17 +677,7 @@ function CreateMenu() {
         menuHtml += '<div class="inline btn-group">\n';
         menuHtml += '<button class="btn btn-secondary dropdown-toggle menu_top" type="button" id="' + menuId + '_label" aria-controls="' + menuId + '_wrapper" aria-haspopup="true" data-toggle="dropdown">' + menu.label + ' <i class="caret"></i>';
         if ( typeof(allMenus[k].key) != "undefined" ) {
-            menuHtml += '<span class="sr-only"> (';
-            if ( menu.isCtrl ) {
-                menuHtml += "Ctrl + ";
-            }
-            if ( menu.isAlt ) {
-                menuHtml += "Alt + ";
-            }
-            if ( menu.isShift ) {
-                menuHtml += "Shift + ";
-            }
-            menuHtml += menu.keyName + ')</span>';
+            menuHtml += '<span class="sr-only"> (Shift Alt ' + menu.keyName + ')</span>';
         }
         menuHtml += '</button>\n';
         menuHtml += '<div class="dropdown-menu" aria-labelledby="' + menuId + '_label" id="' + menuId + '_wrapper" aria-expanded="false">\n';
@@ -766,17 +686,9 @@ function CreateMenu() {
         for ( var i = 0 ; i < numItems ; i++ ) {
             var thisItem = menuItems[i];
             var buttonText = thisItem.label;
-            buttonText += '<span class="key_binding_label">(';
-            if ( thisItem.isCtrl ) {
-                buttonText += "Ctrl + ";
-            }
-            if ( thisItem.isAlt ) {
-                buttonText += "Alt + ";
-            }
-            if ( thisItem.isShift ) {
-                buttonText += "Shift + ";
-            }
-            buttonText += thisItem.keyName + ')</span>';
+
+            // disabled until we implement in menu shortcut keys
+            //buttonText += '<span class="key_binding_label">(' + thisItem.keyName + ')</span>';
 
             var buttonHtml = '<button class="invis_button dropdown-item" data-item="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
             var listHtml = '<button role="option" class="invis_button dropdown-item" data-item="edit_trigger_' + k + '_' + i + '">' + buttonText + '</button>\n';
@@ -1092,6 +1004,10 @@ function EditText(item) {
     var insertThis = item.contentPre + currentHighlight + item.contentPost;
 
     InsertInTextareaAtCursor($('#rmd_text')[0], insertThis);
+
+    if ( typeof(item.label) != "undefined" ) {
+        DisplayMessage("Inserted " + item.label, "live");
+    }
 }
 
 function InsertInTextareaAtCursor(myField, myValue) {
@@ -1124,6 +1040,9 @@ function InsertInTextareaAtCursor(myField, myValue) {
 function DisplayMessage(msg, where) {
     if ( typeof(where) == "undefined" ) {
         var where = "live";
+    }
+    if ( where == "live" ) {
+        where = "live_sr";
     }
 
     if ( where == "system_message" ) {
