@@ -11,7 +11,7 @@ include "getnewid.php";
 $sysMsg = "";
 $errorMsg = "";
 $createdFileNames = "";
-$testingLevel = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
 $platform = "xampp"; // aws, xampp (local)
 
@@ -44,7 +44,7 @@ if ( ! $isDirSet ) {
 }
 
 $haveData = false;
-if ( isset($_POST['rmd_name']) && ! empty($_POST['rmd_name']) && isset($_POST['rmd_text']) && ! empty($_POST['rmd_text']) && isset($_POST['formats']) && ! empty($_POST['formats']) ) {
+if ( isset($_POST['rmd_name']) && ! empty($_POST['rmd_name']) && isset($_POST['rmd_text']) && ! empty($_POST['rmd_text']) ) {
     $haveData = true;
 }
 
@@ -59,7 +59,11 @@ if ( $haveData && $isDirSet ) {
 
     $name = $_POST['rmd_name'];
     $text = $_POST['rmd_text'];
-    $formats = $_POST['formats'];
+    if ( isset($_POST['formats']) && ! empty($_POST['formats']) ) {
+        $formats = $_POST['formats'];
+    } else {
+        $formats = "";
+    }
 
     if ( $_SESSION['folder_id'] > 0 ) 
     {
@@ -67,7 +71,7 @@ if ( $haveData && $isDirSet ) {
 
         $fileName = $_POST['rmd_name'];
         $fileName = str_replace(" ", "", $fileName);
-        $fileFormatsInput = trim($_POST['formats']);
+        $fileFormatsInput = trim($formats);
         $fileFormats = explode(" ", $fileFormatsInput);
         $dir = "./output/$id";
 

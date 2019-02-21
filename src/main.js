@@ -159,7 +159,7 @@ function SetEvents() {
     // from any menu, esc brings back to main textarea, LR goes to next prev menu
     $(document).on('keydown', '#edit_menu button', function(e) {
         if ( e.keyCode == 27 ) { // esc
-            console.log('we try and focus');
+            //console.log('we try and focus');
             setTimeout(function() { 
                 // we wrap this in a delay, as otherwise it's caught by the default behavior, and just closes 1 level of menu, and I don't feel like overriding default bootstrap
                 $('#rmd_text').focus(); 
@@ -172,10 +172,10 @@ function SetEvents() {
                 currentIndex = currentSet.index($(this).parent().parent().find('button.menu_top')[0]);
             }
 
-            if ( e.keyCode == 37 && currentIndex != 0 ) {
+            if ( e.keyCode == 37 && currentIndex > 0 ) {
                 //$(currentSet[currentIndex-1]).focus();
                 $(currentSet[currentIndex-1]).trigger('click');
-            } else if ( e.keyCode == 39 && currentIndex > 0 ) {
+            } else if ( e.keyCode == 39 && currentIndex < currentSet.length ) {
                 //$(currentSet[currentIndex+1]).focus();
                 $(currentSet[currentIndex+1]).trigger('click');
             }
@@ -340,7 +340,7 @@ function SaveInputToCookie(sender) {
     // save this input as a cookie. 
     // the method will depend on the input in question, so we'll just have sections of IDs
     var id = $(sender).attr('id');
-    var simpleInputs = ['rmd_name', 'rmd_text', 'bibtex_textarea', 'choice_html', 'choice_docx', 'choice_pdf', 'choice_pptx' ];
+    var simpleInputs = ['rmd_name', 'rmd_text', 'bibtex_textarea', 'choice_html', 'choice_docx', 'choice_pdf', 'choice_pptx', 'choice_custom', 'custom_yaml' ];
     var thisCookie = {};
     var set;
 
@@ -524,15 +524,15 @@ function SubmitData() {
     // add header info (if any)
     var headerHtml = "";
     headerHtml += "---\n";
-    if ( ! $('#advanced_options_wrapper').hasClass('.hidden') ) {
-        $('.cust_header_row').each(function() {
-            var thisKey = $(this).find('.header_key').val();
-            var thisVal = $(this).find('.header_val').val();
-            
-            if ( thisKey.length > 0 && thisVal.length > 0 ) { // only accept non blank key val pairs
-                headerHtml += thisKey + ': "' + thisVal + '"\n';
-            }
-        });
+    var custYaml = $('#custom_yaml').val().trim();
+    if ( custYaml.length > 0 ) {
+        // remove the default (empty) stuff from parse yaml, just to figure out if we have any content, or if it's the default empty stuff
+        custYaml = custYaml.replace(new RegExp('---\n', 'g'), "");
+        custYaml = custYaml.replace(new RegExp('title: ""\nauthor: ""\ndate: ""\n', 'g'), "");
+        custYaml = custYaml.replace(new RegExp('---', 'g'), "");
+
+        // everything else can stay
+        headerHtml += custYaml;
     }
 
     // csl
@@ -658,7 +658,7 @@ function CreateMenu() {
 
     // pre
     searchHtmlFull += '<div class="inline btn-group" id="menu_search_wrapper">\n';
-    searchHtmlFull += '<button class="btn btn-secondary dropdown-toggle" type="button" id="menu_search" aria-haspopup="true" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
+    searchHtmlFull += '<button class="btn btn-secondary dropdown-toggle menu_top" type="button" id="menu_search" aria-haspopup="true" data-toggle="dropdown">Search (Alt + /)<i class="caret"></i></button>\n';
     searchHtmlFull += '<div class="dropdown-menu" aria-labelledby="menu_search" id="menu_search_ddl" aria-expanded="false">\n';
     searchHtmlFull += '<input type="text" class="form-control" id="search_shortcuts_input" placeholder="Search Shortcuts" aria-label="Search Shortcuts" role="combobox" aria-autocomplete="list" aria-haspopup="false">\n';
     searchHtml += '<div role="listbox" id="autocomplete_list" aria-expanded="true">\n';
