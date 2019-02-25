@@ -603,6 +603,7 @@ function DisplaySuccess(response) {
     var haveFiles = false;
     if ( typeof(response.created_filenames) != "undefined" ) {
         if ( typeof(response.created_filenames[1]) != "undefined" ) {
+            downloadMessage += "<h3 id='file_output_header' tabindex='0'>File Output</h3>\n";
             for ( var i = 0 ; i < response.created_filenames[1].length ; i++ ) {
                 haveFiles = true;
                 downloadMessage += '<p><a href="output/' + response.ID + "/" + response.created_filenames[1][i] + '" target="_blank">Download ' + response.created_filenames[1][i] + '</a></p>\n';
@@ -629,11 +630,15 @@ function DisplaySuccess(response) {
 
     DisplayMessage(downloadMessage, "output")
     if ( msg.length > 0 ) {
-        DisplayMessage(msg, "live_sr")
+        DisplayMessage(msg, "live_sr_assertive");
     }
     if ( sysMessage.length > 0 ) {
         DisplayMessage(sysMessage, "system_message")
     }
+
+    setTimeout(function() {
+        $('#file_output_header').focus();
+    }, 200);
 }
 
 function GetAllFileNames() {
@@ -1040,9 +1045,11 @@ function InsertInTextareaAtCursor(myField, myValue) {
 }
 
 function DisplayMessage(msg, where) {
+    // display message in a particular html id area
     if ( typeof(where) == "undefined" ) {
         var where = "live";
     }
+
     if ( where == "live" ) {
         where = "live_sr";
     }
@@ -1060,5 +1067,6 @@ function DisplayMessage(msg, where) {
     msg = msg.replace(/\r/g, "<br>");
 
     $('#' + where).html(msg);
+
 }
 
