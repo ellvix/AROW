@@ -6,15 +6,15 @@ Sys.setenv(HOME = "/usr/lib/R") # required for pandoc to work
 library(rmarkdown)
 library(stringr)
 
-args = commandArgs(trailingOnly=TRUE)
+args <- commandArgs(trailingOnly=TRUE)
 
-path = ".\\RMD_src\\untitled.rmd"# a default path in case our param fails
+path <- ".\\RMD_src\\untitled.rmd" # a default path in case our param fails
 
 outputType <- c()
 outputType <- c(outputType, 'all')
 if ( length(args) > 0 ) {
-    path = ""
-    path = args[1]
+    path <- ""
+    path <- args[1]
     print(path)
 
     outputType <- c()
@@ -36,9 +36,9 @@ if ( length(args) > 0 ) {
     }
 }
 
-result = tryCatch({
+result <- tryCatch({
 
-    fileNames = rmarkdown::render(path, output_format=outputType, encoding="UTF-8")
+    fileNames <- rmarkdown::render(path, output_format=outputType, encoding="UTF-8")
     print(fileNames)
     print("R worked :)")
 
