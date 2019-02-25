@@ -1,7 +1,5 @@
 <?php
-if ( session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 
 // what this file does: get data, saves an rmd file, send to R renderer, return rendered files and messages
 

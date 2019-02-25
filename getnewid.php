@@ -1,7 +1,4 @@
 <?php
-if ( session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
 
 // what this file does: searches through the folder structure on /output, finds the next ID in the lot, creates that folder and returns that ID to be used elsewhere
 // note: if 2 users hit this at the exact same time there will be a collision

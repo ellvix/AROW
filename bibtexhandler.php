@@ -1,7 +1,6 @@
 <?php
-if ( session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+
 // file upload handler for BibTex files
 
 include "getnewid.php";

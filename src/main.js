@@ -236,11 +236,6 @@ function SetEvents() {
     // save input data as cookie
     $(document).on('blur', 'input, textarea, select', function() {
         var canSave = true;
-        if ( typeof(cookieStorage.settings.save) != "undefined" ) {
-            if ( ! cookieStorage.settings.save ) {
-                canSave = false;
-            }
-        }
         if ( $(this).attr('id') == "bibtex_upload_file" ) {
             canSave = false;
         }
@@ -383,12 +378,17 @@ function SaveInputToCookie(sender) {
         }
     }
 
-    Cookies.set('rmd_storage', cookieStorage);
+    MaybeSetMainCookie();
 }
 
 function SetSaveUsingCookies(yesno) {
     cookieStorage.settings.save = yesno;
-    Cookies.set('rmd_storage', cookieStorage);
+    MaybeSetMainCookie();
+}
+function MaybeSetMainCookie() {
+    if ( $('#input_cookie_save').prop('checked') ) {
+        Cookies.set('rmd_storage', cookieStorage);
+    }
 }
 
 function DeleteThisCookieOld(thisCookie) {
@@ -538,16 +538,16 @@ function SubmitData() {
     // csl
     var cslOption = $('#bibtex_csl_type > option:selected').attr('data-cit_yaml');
     if ( typeof(cslOption) != "undefined" ) {
-        headerHtml += 'csl: "' + cslOption + '.csl"\n';
+        headerHtml += 'csl: "../../src/csl/' + cslOption + '.csl"\n';
     } else {
-        headerHtml += 'csl: "apa6.csl"\n';
+        headerHtml += 'csl: "../../src/csl/apa6.csl"\n';
     }
 
     // add bibtex info (if any)
     if ( bibFiles.length > 0 ) {
         headerHtml += "bibliography: \n";
         for ( var i = 0 ; i < bibFiles.length ; i++ ) {
-            headerHtml += "- " + bibFiles[i].fileName + "\n";
+            headerHtml += '- "' + bibFiles[i].fileName + '"\n';
         }
     }
 
@@ -567,6 +567,8 @@ function SubmitData() {
             data.formats = data.formats.trim();
         });
     }
+
+    console.log(data.rmd_text);
 
     // send
     DisplayMessage("Processing...");
@@ -745,7 +747,7 @@ function RemoveCustHeader(sender) {
         });
     }
 
-    Cookies.set('rmd_storage', cookieStorage);
+    MaybeSetMainCookie();
 
     $(sender).parent().parent().remove();
 }
@@ -852,10 +854,11 @@ function FileUploadFinisher(response, sender) {
     b.setInput(txt);
     b.bibtex();
     var thisBib = {};
-    thisBib.fileName = response.filePath;
+    var filePathParts = response.filePath.split("/");
+    thisBib.fileName = "../" + filePathParts[filePathParts.length - 2] + "/" + filePathParts[filePathParts.length - 1];
     thisBib.data = b.getEntries();
 
-    // remove the dup first
+    // remove the old version of this file that may exist first
     for ( var i = 0 ; i < bibFiles.length ; i++ ) {
         if ( bibFiles[i].fileName = thisBib.fileName ) {
             bibFiles.splice(i, 1);
@@ -872,8 +875,12 @@ function FileUploadFinisher(response, sender) {
         thisCookie.val = thisBib.fileName;
         DeleteThisCookieOld(thisCookie);
         cookieStorage.files.push(thisCookie);
-        Cookies.set('rmd_storage', cookieStorage);
+        MaybeSetMainCookie();
     }
+
+    // store output ID
+    $('#output_id').val(response.ID);
+
 
     // update the UI
     if ( thisType == "file" || thisType == "cookie" ) {
@@ -920,7 +927,7 @@ function BibtexRemoveFile(sender) {
     for ( var i = 0 ; i < cookieStorage.files.length ; i++ ) {
         if ( cookieStorage.files[i].val.indexOf(fileName) != -1 ) {
             cookieStorage.files.splice(i, 1);
-            Cookies.set('rmd_storage', cookieStorage);
+            MaybeSetMainCookie();
             break;
         }
     }
