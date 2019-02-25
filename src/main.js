@@ -35,6 +35,8 @@ function Init() {
     LoadFromCookies();
 
     MaybeDisableSubmit();
+
+    DisplayAcceptCookieMessage();
 }
 function TestingShit() {
 
@@ -58,6 +60,11 @@ function TestingShit() {
     //InitReferenceInsert();
 }
 function SetEvents() {
+
+    // bookmark: convert cookiealert into local thing, don't have html in by default
+    // search box should be arrowable to other menus
+    // citation choice modal, esc (close) should focus rmd_text
+    // citation: manual input overrides all files
 
     // custom header triggers
     $(document).on('click', '#advanced_options_trigger', function() {
@@ -243,11 +250,6 @@ function SetEvents() {
             SaveInputToCookie(this);
         }
     });
-
-    // Save data with cookies?
-    $(document).on('click', '.acceptcookies', function() {
-        SetSaveUsingCookies($('#input_cookie_save').prop('checked'));
-    });
 }
 
 function SetDefaults() {
@@ -381,13 +383,11 @@ function SaveInputToCookie(sender) {
     MaybeSetMainCookie();
 }
 
-function SetSaveUsingCookies(yesno) {
-    cookieStorage.settings.save = yesno;
-    MaybeSetMainCookie();
-}
 function MaybeSetMainCookie() {
-    if ( $('#input_cookie_save').prop('checked') ) {
-        Cookies.set('rmd_storage', cookieStorage);
+    if ( typeof(cookieStorage.settings.save) != "undefined" ) {
+        if ( cookieStorage.settings.save ) {
+            Cookies.set('rmd_storage', cookieStorage);
+        }
     }
 }
 
@@ -411,6 +411,28 @@ function DeleteThisCookieOld(thisCookie) {
 
 function ClearCookies() {
     Cookies.remove('rmd_storage');
+}
+
+function DisplayAcceptCookieMessage() {
+    if ( typeof(cookieStorage.settings.acceptCookies) == "undefined" ) {
+        console.log('asdfasfds');
+        // add accept cookie message to DOM (it'll read right away for SR)
+        var html = '<div class="alert text-center cookiealert show" role="alert"><!-- START Bootstrap-Cookie-Alert --> <b>This website uses cookies. Do you accept this? <a href="https://cookiesandyou.com/" target="_blank">Learn more</a></b> <label for="input_cookie_save" class="mr-2 ml-2">(Also save work between sessions?</label><input type="checkbox" checked id="input_cookie_save"> ) <button type="button" class="btn btn-primary btn-sm acceptcookies">I agree</button> </div><!-- END Bootstrap-Cookie-Alert -->';
+        $('body').prepend(html);
+
+        // events
+
+        // Save data with cookies?
+        $(document).on('click', '.acceptcookies', function() {
+            cookieStorage.settings.acceptCookies = true;
+            cookieStorage.settings.save = $('#input_cookie_save').prop('checked');
+            Cookies.set('rmd_storage', cookieStorage);
+
+            $('.cookiealert').removeClass('show');
+
+            DisplayMessage("Cookies accepted", "live_sr");
+        });
+    } 
 }
 
 function MaybeDisableSubmit() {
