@@ -164,7 +164,7 @@ function SetEvents() {
     });
 
     // from any menu, esc brings back to main textarea, LR goes to next prev menu
-    $(document).on('keydown', '#edit_menu button', function(e) {
+    $(document).on('keydown', '#edit_menu button, #edit_menu input', function(e) {
         if ( e.keyCode == 27 ) { // esc
             //console.log('we try and focus');
             setTimeout(function() { 
@@ -228,6 +228,9 @@ function SetEvents() {
     });
     $(document).on('shown.bs.modal', '#citation_modal', function() {
         $('#citation_filter').focus();
+    });
+    $(document).on('hidden.bs.modal', '#citation_modal', function() {
+        $('#rmd_text').focus();
     });
 
     // run from button
@@ -415,7 +418,6 @@ function ClearCookies() {
 
 function DisplayAcceptCookieMessage() {
     if ( typeof(cookieStorage.settings.acceptCookies) == "undefined" ) {
-        console.log('asdfasfds');
         // add accept cookie message to DOM (it'll read right away for SR)
         var html = '<div class="alert text-center cookiealert show" role="alert"><!-- START Bootstrap-Cookie-Alert --> <b>This website uses cookies. Do you accept this? <a href="https://cookiesandyou.com/" target="_blank">Learn more</a></b> <label for="input_cookie_save" class="mr-2 ml-2">(Also save work between sessions?</label><input type="checkbox" checked id="input_cookie_save"> ) <button type="button" class="btn btn-primary btn-sm acceptcookies">I agree</button> </div><!-- END Bootstrap-Cookie-Alert -->';
         $('body').prepend(html);
