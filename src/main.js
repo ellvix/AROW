@@ -887,9 +887,11 @@ function FileUploadFinisher(response, sender) {
     thisBib.fileName = "../" + filePathParts[filePathParts.length - 2] + "/" + filePathParts[filePathParts.length - 1];
     thisBib.data = b.getEntries();
 
-    // remove the old version of this file that may exist first
+    // remove the old version of this file that may exist first (remove this fileName)
     for ( var i = 0 ; i < bibFiles.length ; i++ ) {
-        if ( bibFiles[i].fileName = thisBib.fileName ) {
+        var thisBibSplit = thisBib.fileName.split("/");
+        var bibISplit = bibFiles[i].fileName.split("/");
+        if ( thisBibSplit[thisBibSplit.length - 1] == bibISplit[bibISplit.length - 1] ) {
             bibFiles.splice(i, 1);
             break;
         }
