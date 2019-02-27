@@ -626,11 +626,11 @@ function DisplaySuccess(response) {
     // display all files that were created
     var haveFiles = false;
     if ( typeof(response.created_filenames) != "undefined" ) {
-        if ( typeof(response.created_filenames[1]) != "undefined" ) {
+        if ( response.created_filenames.length > 0 ) {
             downloadMessage += "<h3 id='file_output_header' tabindex='0'>File Output</h3>\n";
-            for ( var i = 0 ; i < response.created_filenames[1].length ; i++ ) {
+            for ( var i = 0 ; i < response.created_filenames.length ; i++ ) {
                 haveFiles = true;
-                downloadMessage += '<p><a href="output/' + response.ID + "/" + response.created_filenames[1][i] + '" target="_blank">Download ' + response.created_filenames[1][i] + '</a></p>\n';
+                downloadMessage += '<p><a href="output/' + response.ID + "/" + response.created_filenames[i] + '" target="_blank">Download ' + response.created_filenames[i] + '</a></p>\n';
             }
         }
     }

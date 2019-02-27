@@ -8,10 +8,12 @@ include "getnewid.php";
 // control vars
 $sysMsg = "";
 $errorMsg = "";
-$createdFileNames = "";
-$testingLevel = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$createdFileNames = [];
+$testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
 $platform = "xampp"; // aws, xampp (local)
+$startTime = 0;
+$dontTakeTheseExtensions = ['tex', 'rmd', 'log'];
 
 // reporting
 error_reporting(E_ALL & ~E_NOTICE);
@@ -24,6 +26,10 @@ if ( $testingLevel > 1 ) {
     $time = date('Y-m-d H:i:s');
     $sysMsg .= "<p>Timestamp: $time</p>\n";
 }
+
+// set initial timestamp
+$date = new DateTime();
+$startTime = $date->getTimestamp();
 
 // get folder info
 $isDirSet = false;
@@ -86,11 +92,11 @@ if ( $haveData && $isDirSet ) {
 
         // write input data to file
         $fileContents = $_POST['rmd_text'];
-        //$fileContents = mb_convert($fileContents, 'UTF-8', 'auto');
-        $fileContents = utf8_encode($fileContents);
+        //$fileContents = mb_convert($fileContents, 'UTF-8', 'auto'); // probably don't use these, as encoding already utf8 text can mangle it
+        //$fileContents = utf8_encode($fileContents);
         $file = "$dir/$fileName.rmd"; 
         mkdir($dir);
-        file_put_contents($file, $fileContents);
+        file_put_contents($file, "\xEF\xBB\xBF" . $fileContents);
 
         if ( $testingLevel > 1 ) {
             $sysMsg .= "<p>RMD file location: $dir</p>\n";
@@ -135,10 +141,18 @@ if ( $haveData && $isDirSet ) {
                 //$sysMsg .= "<div>" . serialize($output) . "</div>\n";
 
 
-                // get all files that were created
-                $pattern = '/\/output\/\d+\/([^"]+)"/';
-                preg_match_all($pattern, serialize($output), $createdFileNames);
-                //$sysMsg .= "<p>createdFileNames:  " . print_r(implode(',',$createdFileNames), true) . "</p>\n";
+                // get all files that were created just now
+                $createdFileNames = [];
+                $dirIt= new DirectoryIterator($dir);
+                foreach ( $dirIt as $fileInfo ) {
+                    if ( !$fileInfo->isDot()) {
+                        if ( $fileInfo->getMTime() > $startTime && ! in_array($fileInfo->getExtension(), $dontTakeTheseExtensions) ) {
+                            array_push($createdFileNames, $fileInfo->getFilename());
+                        }
+                    }
+                }
+
+                //$sysMsg .= "<p>createdFileNames:  " . print_r(implode(', ',$createdFileNames), true) . "</p>\n";
             } else {
                 $sysMsg .= "<h3>R failed to run.</h3>\n";
                 $sysMsg .= "<div>" . print_r($output, true) . "</div>\n";
