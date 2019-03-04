@@ -3,19 +3,15 @@
 
 Sys.setenv(HOME = "/usr/lib/R") # required for pandoc to work
 
-library(rmarkdown)
-library(stringr)
-
 args <- commandArgs(trailingOnly=TRUE)
 
-path <- ".\\RMD_src\\untitled.rmd" # a default path in case our param fails
-
+# set outputType to all types caught in the arguments passed in
 outputType <- c()
 outputType <- c(outputType, 'all')
 if ( length(args) > 0 ) {
     path <- ""
     path <- args[1]
-    print(path)
+    #print(path)
 
     outputType <- c()
     if ( grepl('html', args[3])) {
@@ -36,18 +32,17 @@ if ( length(args) > 0 ) {
     }
 }
 
-result <- tryCatch({
+# run pandoc render foreach outputType
+arow_render <-
+    function(outputType) {
+        return(tryCatch(rmarkdown::render(path, output_format = outputType, encoding="UTF-8"), error=function(e) NULL))
+    }
+fileNames <- lapply(outputType, arow_render)
 
-    fileNames <- rmarkdown::render(path, output_format=outputType, encoding="UTF-8")
-    print(fileNames)
-    print("R worked :)")
+# we pass this back to php with the output string, and we wrap each file name in specific text so back in php we can regex through all the garbage output from R and find the fileNames (I'd rather use return, but I can't figure it out atm)
+out <- paste(fileNames,collapse="|HERESAFILE|")
+out <- paste("|HERESAFILE", out, "HERESAFILE|",sep="|")
+print(out)
+#fileNames <- unlist(fileNames)
 
-}, error=function(cond){
-    print("R Error")
-    print(paste("[", cond, "]"))
-}, warning=function(cond){
-    print("R Warning")
-}, finally={
-    print("R proccess complete")
-})
 

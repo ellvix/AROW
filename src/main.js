@@ -592,8 +592,6 @@ function SubmitData() {
         });
     }
 
-    console.log(data.rmd_text);
-
     // send
     DisplayMessage("Processing...");
     $.ajax({

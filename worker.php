@@ -12,7 +12,7 @@ $createdFileNames = [];
 $testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
 $platform = "xampp"; // aws, xampp (local)
-$startTime = 0;
+$startTime = 2;
 $dontTakeTheseExtensions = ['tex', 'rmd', 'log'];
 
 // reporting
@@ -134,22 +134,20 @@ if ( $haveData && $isDirSet ) {
 
             if ( isset($output) ) {
                 if ( $testingLevel > 1 ) {
-                    $sysMsg .= "<h3>Output from R</h3>\n";
-                    $sysMsg .= "<div>" . print_r($output, true) . "</div>\n";
+                    $sysMsg .= "<div class='card p-4'><h4>Output from R</h4>" . print_r($output, true) . "</div>\n";
                 } 
 
                 //$sysMsg .= "<div>" . serialize($output) . "</div>\n";
 
-
-                // get all files that were created just now
+                // we regex through the garbage output to get our filenames. 
+                // it's wrapped in FILENAMESHERE|actualfiles|FILENAMESTHERE
+                //$pattern = '/\/output\/\d+\/([^"]+)"/';
                 $createdFileNames = [];
-                $dirIt= new DirectoryIterator($dir);
-                foreach ( $dirIt as $fileInfo ) {
-                    if ( !$fileInfo->isDot()) {
-                        if ( $fileInfo->getMTime() > $startTime && ! in_array($fileInfo->getExtension(), $dontTakeTheseExtensions) ) {
-                            array_push($createdFileNames, $fileInfo->getFilename());
-                        }
-                    }
+                $pattern = '/HERESAFILE\|[^\|]+\/([^\|\/]+)\|/';
+                preg_match_all($pattern, serialize($output), $match);
+
+                if ( count($match) > 1 ) {
+                    $createdFileNames = $match[1];
                 }
 
                 //$sysMsg .= "<p>createdFileNames:  " . print_r(implode(', ',$createdFileNames), true) . "</p>\n";
