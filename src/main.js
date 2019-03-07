@@ -549,7 +549,8 @@ function SubmitData() {
     var headerHtml = "";
     headerHtml += "---\n";
     var custYaml = $('#custom_yaml').val().trim();
-    if ( custYaml.length > 0 ) {
+    //if ( custYaml.length > 0 ) {
+    if ( false ) { // todo / debugging, we removed this to try and get output: working
         // remove the default (empty) stuff from parse yaml, just to figure out if we have any content, or if it's the default empty stuff
         custYaml = custYaml.replace(new RegExp('---\n', 'g'), "");
         custYaml = custYaml.replace(new RegExp('title: ""\nauthor: ""\ndate: ""\n', 'g'), "");
@@ -560,20 +561,24 @@ function SubmitData() {
     }
 
     // csl
-    var cslOption = $('#bibtex_csl_type > option:selected').attr('data-cit_yaml');
-    if ( typeof(cslOption) != "undefined" ) {
-        headerHtml += 'csl: "../../src/csl/' + cslOption + '.csl"\n';
-    } else {
-        headerHtml += 'csl: "../../src/csl/apa6.csl"\n';
-    }
+    //var cslOption = $('#bibtex_csl_type > option:selected').attr('data-cit_yaml');
+    //if ( typeof(cslOption) != "undefined" ) {
+        //headerHtml += 'csl: ../../src/csl/' + cslOption + '.csl\n';
+    //} else {
+        //headerHtml += 'csl: ../../src/csl/apa6.csl\n';
+    //}
 
-    // add bibtex info (if any)
-    if ( bibFiles.length > 0 ) {
-        headerHtml += "bibliography: \n";
-        for ( var i = 0 ; i < bibFiles.length ; i++ ) {
-            headerHtml += '- "' + bibFiles[i].fileName + '"\n';
-        }
-    }
+    //// add bibtex info (if any)
+    //if ( bibFiles.length > 0 ) {
+        //if ( bibFiles.length == 1 ) {
+            //headerHtml += 'bibliography: ' + bibFiles[0].fileName + '\n';
+        //} else {
+            //headerHtml += 'bibliography: \n';
+            //for ( var i = 0 ; i < bibFiles.length ; i++ ) {
+                //headerHtml += '  - ' + bibFiles[i].fileName + '\n';
+            //}
+        //}
+    //}
 
     headerHtml += "---\n";
     // end header info
@@ -590,6 +595,19 @@ function SubmitData() {
             }
             data.formats = data.formats.trim();
         });
+    }
+    var cslOption = $('#bibtex_csl_type > option:selected').attr('data-cit_yaml');
+    if ( typeof(cslOption) != "undefined" ) {
+        data.csl_path = '../../src/csl/' + cslOption + '.csl';
+    } else {
+        data.csl_path = '../../src/csl/apa6.csl';
+    }
+    if ( bibFiles.length > 0 ) {
+        var bib_paths = []
+        for ( var i = 0 ; i < bibFiles.length ; i++ ) {
+            bib_paths.push(bibFiles[i].fileName);
+        }
+        data.bib_paths = bib_paths;
     }
 
     // send
@@ -830,6 +848,10 @@ function FileUploadFinisher(response, sender) {
     if ( typeof(response.error) != 'undefined' ) {
         if ( response.error.length > 0 ) {
             DisplayMessage(response.error, 'error');
+            return;
+        }
+        if ( response.message.length > 0 ) {
+            DisplayMessage(response.message, 'system_message');
             return;
         }
     } else {

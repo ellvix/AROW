@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(['cookie_lifetime' => 86400]);
 
 // file upload handler for BibTex files
 
@@ -26,7 +26,7 @@ if ( ! isset ( $_SESSION_['folder_id'] ) ) {
 if ( ! $isDirSet ) {
     $errorMsg .= "<p>Error creating new id.</p>\n";
 } else if ( $testingLevel > 1 ) {
-    $sysMsg .= "<p>Folder ID: " . $_SESSION['folder_id'] . "</p>\n";
+    $sysMsg .= "<p>(bib) Folder ID: " . $_SESSION['folder_id'] . "</p>\n";
 }
 
 if ( $isDirSet ) {

@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(['cookie_lifetime' => 86400]);
 
 // what this file does: get data, saves an rmd file, send to R renderer, return rendered files and messages
 
@@ -18,6 +18,7 @@ $dontTakeTheseExtensions = ['tex', 'rmd', 'log'];
 // reporting
 error_reporting(E_ALL & ~E_NOTICE);
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+    global $errorMsg;
     //throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
     $errorMsg .= "<p>Error ($errline) $errstr</p>\n";
 }
@@ -44,7 +45,7 @@ if ( ! isset ( $_SESSION_['folder_id'] ) ) {
 if ( ! $isDirSet ) {
     $errorMsg .= "<p>Error creating new id.</p>\n";
 } else if ( $testingLevel > 1 ) {
-    $sysMsg .= "<p>Folder ID: " . $_SESSION['folder_id'] . "</p>\n";
+    $sysMsg .= "<p>(main) Folder ID: " . $_SESSION['folder_id'] . "</p>\n";
 }
 
 $haveData = false;
@@ -96,10 +97,26 @@ if ( $haveData && $isDirSet ) {
         //$fileContents = utf8_encode($fileContents);
         $file = "$dir/$fileName.rmd"; 
         mkdir($dir);
-        file_put_contents($file, "\xEF\xBB\xBF" . $fileContents);
+        file_put_contents($file, $fileContents);
 
         if ( $testingLevel > 1 ) {
             $sysMsg .= "<p>RMD file location: $dir</p>\n";
+        }
+
+        // hack: session_start isn't working (probably a php.ini issue with session.save_path permission), which means all files are in different folders. 
+        // Let's group them up before we submit. Then R will catch every .bib in the folder :)
+        if ( isset($_POST['bib_paths']) ) {
+            foreach ( $_POST['bib_paths'] as $thisBibPath ) {
+                $oldBib = str_replace("../", "output/", $thisBibPath);
+                $newBib = "./output/" . $id . "/" . basename($thisBibPath);
+                $copyWorked = copy($oldBib, $newBib);
+                if ( $testingLevel > 1 && ! $copyWorked) {
+                    $err = error_get_last();
+                    $sysMsg .= "<p>copied Path [$oldBib] to [$newBib]. Worked: [$copyWorked]</p>\n";
+                    $sysMsg .= "<p>Last err: " . $err['message'] . " line " . $err['line'] . "</p>\n";
+                    $sysMsg .= "<p>file existed in the first place? [" . file_exists($oldBib) . "]</p>\n";
+                }
+            }
         }
 
         // run renderer to generate files
@@ -113,8 +130,9 @@ if ( $haveData && $isDirSet ) {
             }
             $args .= "\"" . dirname(__FILE__) . $argLocalPath; // the file path + name
             $args .= " id=\"$id\"";
-            if ( strlen($fileFormatsInput) > 0 ) {
-                $args .= " formats=\"$fileFormatsInput\"";
+            $args .= " formats=\"$fileFormatsInput\"";
+            if ( isset($_POST['csl_path'] ) ) {
+                $args .= " " . basename($_POST['csl_path']);
             }
 
             $rScript = "C:\\Program Files\\R\\R-3.5.0\\bin\\Rscript.exe"; // xampp localhost default
@@ -162,10 +180,15 @@ if ( $haveData && $isDirSet ) {
 }
 
 if ( $testingLevel > 1 ) {
-    $sysMsg .= "<p>Processing complete. $fileFormats</p>\n";
+    $sysMsg .= "<p>Processing complete. " . implode($fileFormats, ", ") . "</p>\n";
 }
 
 $outputData = array("error" => $errorMsg, "ID" => $id, "created_filenames" => $createdFileNames, "message" => $sysMsg);
 echo json_encode($outputData);
 
+// todo: tests to run:
+// try korean characters
+// test citaitons get created
+// custom yaml output
+// insert R code was removed (look in classes.js)
 ?>
