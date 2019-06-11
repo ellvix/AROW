@@ -16,9 +16,7 @@ Pandoc should be installed by default, but get that too if there are issues. (mu
 
 In your worker.php file, point the $rScript to your Rscript.exe (default is c:/Program Files/R/R-3.5.0/bin/Rscript.exe). Point $rFile to your R renderer file (default is webserverLocation/R/RMDrenderer.R)
 
-Some SQL is needed (though it could be ripped out in a custom install). SQL file is attached for the table and procedure being used. Not included is a dbinfo.inc file at ../inc/dbinfo.inc that has server / pass stuff as standard. 
-
-Current working demo available at ec2-18-222-198-44.us-east-2.compute.amazonaws.com
+Current working demo available at arowtool.com
 
 ## Use
 
