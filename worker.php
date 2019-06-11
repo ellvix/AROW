@@ -9,10 +9,10 @@ include "getnewid.php";
 $sysMsg = "";
 $errorMsg = "";
 $createdFileNames = [];
-$testingLevel = 2 ; // 0 = not testing, 1 = some test output, 2 = more text output
+$testingLevel = 0 ; // 0 = not testing, 1 = some test output, 2 = more text output
 $runR = true;
-$platform = "xampp"; // aws, xampp (local)
-$startTime = 2;
+$platform = "aws"; // aws, xampp (local)
+$startTime = 0;
 $dontTakeTheseExtensions = ['tex', 'rmd', 'log'];
 
 // reporting
@@ -186,9 +186,4 @@ if ( $testingLevel > 1 ) {
 $outputData = array("error" => $errorMsg, "ID" => $id, "created_filenames" => $createdFileNames, "message" => $sysMsg);
 echo json_encode($outputData);
 
-// todo: tests to run:
-// try korean characters
-// test citaitons get created
-// custom yaml output
-// insert R code was removed (look in classes.js)
 ?>

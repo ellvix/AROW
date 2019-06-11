@@ -8,14 +8,11 @@ args <- commandArgs(trailingOnly=TRUE)
 print(paste(args, sep=", "))
 
 # set outputType to all types caught in the arguments passed in
-#outputType <- as.character()
-#outputType <- c(outputType, 'all')
 if ( length(args) > 0 ) {
     # Define path variables:
     file_path <- args[1]
     bib_path <- dirname(file_path)  # Exclude the last file name from the full path to obtain the current directory which user_bib_files are also uploaded.
     csl_path <- "/var/www/html/src/csl"
-    #csl_path <- "../src/csl"
     #csl_path <- "/AROW/src/csl"
     csl_file <- args[4]
 
@@ -26,7 +23,6 @@ if ( length(args) > 0 ) {
     if(length(bib_file) > 0) {
         # bib and csl variable definitions
         bib_file <- paste0(bib_path, "/", bib_file)  # Resaving `bib_file` as path/to/file format for each bib file.
-        #csl_file <- "apa6.csl"  # Here the value "apa6.csl" should be replaced with user-selected csl value.
         csl_file <- paste0(csl_path, "/", csl_file)  # Resaving `csl_file` as path/to/file format.
         print(paste(csl_file, sep=", "))
 
@@ -53,6 +49,9 @@ if ( length(args) > 0 ) {
     if ( grepl('pptx', args[3] )) {
         outputType <- c(outputType, 'powerpoint_presentation')
     }
+    if ( grepl('epub', args[3] )) {
+        outputType <- c(outputType, 'epub_book')
+    }
     if ( length(outputType) == 0 ) {
         # default
         outputType <- 'all'
@@ -62,8 +61,11 @@ if ( length(args) > 0 ) {
 # run pandoc render foreach outputType
 arow_render <-
     function(outputType) {
-        return(tryCatch(rmarkdown::render(file_path, output_format = outputType, encoding="UTF-8", output_options = bib_csl_args), error=function(e) NULL))
-        #return(tryCatch(rmarkdown::render(file_path, output_format = outputType, encoding="UTF-8"), error=function(e) NULL))
+        if ( outputType == "epub_book" ) {
+            return(tryCatch(rmarkdown::render(file_path, output_format = bookdown::epub_book(epub_version = "epub3"), encoding="UTF-8", output_options = bib_csl_args), error=function(e) NULL))
+        } else {
+            return(tryCatch(rmarkdown::render(file_path, output_format = outputType, encoding="UTF-8", output_options = bib_csl_args), error=function(e) NULL))
+        }
     }
 
 sink('/var/www/html/debug/jy_debug.txt')
@@ -74,7 +76,6 @@ paste0("In comparison, the default output type caught from constant file YAML is
 
 if(outputType == "all") {
     fileNames <- rmarkdown::render(file_path, output_format="all", encoding="UTF-8", output_options = bib_csl_args)
-    #fileNames <- rmarkdown::render(file_path, output_format="all", encoding="UTF-8")
 } else {
     fileNames <- lapply(outputType, arow_render)
 }

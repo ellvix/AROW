@@ -340,7 +340,7 @@ function SaveInputToCookie(sender) {
     // save this input as a cookie. 
     // the method will depend on the input in question, so we'll just have sections of IDs
     var id = $(sender).attr('id');
-    var simpleInputs = ['rmd_name', 'rmd_text', 'bibtex_textarea', 'choice_html', 'choice_docx', 'choice_pdf', 'choice_pptx', 'choice_custom', 'custom_yaml' ];
+    var simpleInputs = ['rmd_name', 'rmd_text', 'bibtex_textarea', 'choice_html', 'choice_docx', 'choice_pdf', 'choice_pptx', 'choice_epub', 'choice_custom', 'custom_yaml' ];
     var thisCookie = {};
     var set;
 
@@ -430,7 +430,7 @@ function DisplayAcceptCookieMessage() {
             cookieStorage.settings.save = $('#input_cookie_save').prop('checked');
             Cookies.set('rmd_storage', cookieStorage);
 
-            $('.cookiealert').removeClass('show');
+            $('.cookiealert').remove();
 
             DisplayMessage("Cookies accepted", "live_sr");
         });
@@ -549,8 +549,7 @@ function SubmitData() {
     var headerHtml = "";
     headerHtml += "---\n";
     var custYaml = $('#custom_yaml').val().trim();
-    //if ( custYaml.length > 0 ) {
-    if ( false ) { // todo / debugging, we removed this to try and get output: working
+    if ( custYaml.length > 0 ) {
         // remove the default (empty) stuff from parse yaml, just to figure out if we have any content, or if it's the default empty stuff
         custYaml = custYaml.replace(new RegExp('---\n', 'g'), "");
         custYaml = custYaml.replace(new RegExp('title: ""\nauthor: ""\ndate: ""\n', 'g'), "");
@@ -580,7 +579,7 @@ function SubmitData() {
         //}
     //}
 
-    headerHtml += "---\n";
+    headerHtml += "\n---\n";
     // end header info
 
     // compile data
@@ -643,7 +642,7 @@ function DisplaySuccess(response) {
     var haveFiles = false;
     if ( typeof(response.created_filenames) != "undefined" ) {
         if ( response.created_filenames.length > 0 ) {
-            downloadMessage += "<h3 id='file_output_header' tabindex='0'>File Output</h3>\n";
+            downloadMessage += "<h3 id='file_output_header' tabindex='0'>Download Files</h3>\n";
             for ( var i = 0 ; i < response.created_filenames.length ; i++ ) {
                 haveFiles = true;
                 downloadMessage += '<p><a href="output/' + response.ID + "/" + response.created_filenames[i] + '" target="_blank">Download ' + response.created_filenames[i] + '</a></p>\n';
@@ -1059,7 +1058,7 @@ function EditText(item) {
     InsertInTextareaAtCursor($('#rmd_text')[0], insertThis);
 
     if ( typeof(item.label) != "undefined" ) {
-        DisplayMessage("Inserted " + item.label, "live");
+        DisplayMessage("Inserted " + item.label, "live_sr_assertive");
     }
 }
 

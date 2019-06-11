@@ -51,6 +51,14 @@ function GetFullMenuVar() {
     menuHeading.items.push(menuItem);
 
     menuItem = {};
+    menuItem.label = "R Chunk";
+    menuItem.key = 82; 
+    menuItem.keyName = "R";
+    menuItem.contentPre = "```{r}\n";
+    menuItem.contentPost = "\n```";
+    menuHeading.items.push(menuItem);
+
+    menuItem = {};
     menuItem.label = "Heading 1";
     menuItem.key = 49; 
     menuItem.keyName = "1";
@@ -170,8 +178,8 @@ function GetFullMenuVar() {
 
     menuHeading = {};
     menuHeading.label = "Maths Symbols";
-    menuHeading.key = 77; 
-    menuHeading.keyName = "M";
+    menuHeading.key = 83; 
+    menuHeading.keyName = "S";
     menuHeading.items = [];
 
     menuItem = {};
@@ -294,8 +302,8 @@ function GetFullMenuVar() {
 
     menuHeading = {};
     menuHeading.label = "Maths Structure";
-    menuHeading.key = 83; 
-    menuHeading.keyName = "S";
+    menuHeading.key = 84; 
+    menuHeading.keyName = "T";
     menuHeading.items = [];
 
     menuItem = {};

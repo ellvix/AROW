@@ -59,6 +59,7 @@
                 <p>The Accessible RMarkdown Writer is a tool that creates documents in various formats based on RMarkdown text. </p>
                 <p>It is designed to make the process of creating scientifically rigorous PDF, Word, and other types of documents easier for people with disabilities. Other ways of creating complex documents from text exist, such as LaTeX, but they are considerably more difficult to use, and require much higher levels of proficiency to be able to use properly. </p>
                 <p>RMarkdown is quite simple. It is essentially Markdown (a common formatting syntax) with the added ability to add inline R code. In addition, this tool has added features to customize the YAML headers and easily add BibTeX citations. </p>
+                <p>For more information, to tell us about issues, or to suggest additional features, please join our mailing list at <a href="https://www.freelists.org/list/arow">freelists.org/list/arow</a>.</p>
                 <h2>Instructions</h2>
                 <p>For basic use, type something in the text box, choose your output filename and the file types, and hit the submit button.</p>
                 <p>For more advanced use, there are a number of tools. In the main text area, you may type Markdown text (for help, check out a <a href="https://commonmark.org/help/">quick reference guide on Markdown</a>, or the <a href="https://daringfireball.net/projects/markdown/syntax">full Markdown syntax</a>), R code (by putting ```{r} above and ``` below your code), and insert a variety of symbols by using the menu above the text area (searchable by the shortcut Alt + /). For other options, click on the Advanced Options button where you can add custom YAML headers and manage citations. Citations are done using the citation manager; upload a citation BibTeX file or manually insert one, and the citations will be available from the Insert menu above the main text area or by the shortcut Alt + C (be sure to use proper citation style, <a href="http://www.bibtex.org/">more information on BibTeX citations here</a>).</p>
@@ -77,13 +78,61 @@
 
                 <div>
                     <div>
-                        <textarea id="rmd_text"># Here's a heading
-**this is some bold text.**
-This is some normal text.
-## Here's some R code:
-```{r}
-Sys.time()
+                        <textarea id="rmd_text"># Introduction
+
+This is the first paragraph.
+
+This is the second paragraph.
+
+# Body
+
+## Table Example
+
+See the table below:
+
+Left | Center | Right
+:--- | :---: | ---:
+value1 | value2 | value3
+
+## Math Example
+
+$\sum_{n=1}^{10} n^2$
+
+## Text Formatting
+
+This is **bolded** text.
+
+This is *italics*.
+
+Superscript: ^superscript^
+
+Subscript: ~subscript~
+
+## Listing Items
+
+### Unordered List
+
+* Apple
+* Orange
+* Grapes
+
+### Ordered List
+
+1. First item
+2. Second item
+3. Third item
+
+## Figure Demo Using R
+
+```{r histogram_test, fig.caption="Histogram of Ozone."}
+hist(airquality$Ozone, col="blue")
 ```
+
+# Conclusion
+
+Thank you and good bye!
+
+# References
 </textarea>
                     </div>
                 </div>
@@ -91,14 +140,15 @@ Sys.time()
                 <p class="form-group"><label for="rmd_name">File name</label><input type="text" id="rmd_name" class="form-control" value="MyFile"></p>
                 <div class="inline_divs" id="output_choices">
                     <p>Create which file types?</p>
-                    <div class="col-sm-2"><label for="choice_html">html</label><input type="checkbox" class="format_choice margin_lr" id="choice_html" checked></div>
-                    <div class="col-sm-2"><label for="choice_docx">docx</label><input type="checkbox" class="format_choice margin_lr" id="choice_docx"></div>
-                    <div class="col-sm-2"><label for="choice_pdf">pdf</label><input type="checkbox" class="format_choice margin_lr" id="choice_pdf"></div>
-                    <div class="col-sm-2"><label for="choice_pptx">pptx</label><input type="checkbox" class="format_choice margin_lr" id="choice_pptx"></div>
-                    <div class="col-sm-2"><label for="choice_custom">Custom</label><input type="checkbox" class="format_choice margin_lr" id="choice_custom"></div>
+                    <div class="col-sm-1"><label for="choice_html">html</label><input type="checkbox" class="format_choice margin_lr" id="choice_html" checked></div>
+                    <div class="col-sm-1"><label for="choice_docx">docx</label><input type="checkbox" class="format_choice margin_lr" id="choice_docx"></div>
+                    <div class="col-sm-1"><label for="choice_pdf">PDF</label><input type="checkbox" class="format_choice margin_lr" id="choice_pdf"></div>
+                    <div class="col-sm-1"><label for="choice_pptx">pptx</label><input type="checkbox" class="format_choice margin_lr" id="choice_pptx"></div>
+                    <div class="col-sm-1"><label for="choice_epub">EPUB3</label><input type="checkbox" class="format_choice margin_lr" id="choice_epub"></div>
+                    <div class="col-sm-1"><label for="choice_custom">Custom</label><input type="checkbox" class="format_choice margin_lr" id="choice_custom"></div>
                 </div>
 
-                <p class="text-center"><button class="btn btn-default" id="advanced_options_trigger" aria-expanded="false" aria-controls="advanced_options_wrapper">Show Advanced Options</button></p>
+                <p class="text-center mt-3"><button class="btn btn-default" id="advanced_options_trigger" aria-expanded="false" aria-controls="advanced_options_wrapper">Show Advanced Options</button></p>
 
                 <div class="clearfix"></div>
                 <p class="text-center"><button class="btn btn-primary" id="main_submit">Submit</button></p>
@@ -259,11 +309,9 @@ Sys.time()
                                 <h3 id="custom_yaml_label">Custom Header YAML</h3>
                                 <p>Add your custom YAML here. More information on YAML can be found on the <a href="https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html" target="_blank">Ansible YAML syntax page</a>. Also note that if you want to add output changes, check the custom file type box in the file type area. If you're not sure what to put here, leave it blank.</p>
                                 <p><textarea id="custom_yaml" aria-labelledby="custom_yaml_label">
----
 title: ""
 author: ""
 date: ""
----
 </textarea>
                             </div>
                             <div class="mb-3">
